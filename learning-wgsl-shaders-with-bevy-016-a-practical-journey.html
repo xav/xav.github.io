@@ -1,0 +1,237 @@
+<!DOCTYPE html><html lang="en-gb"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>A Practical Guide to WGSL Shaders in Bevy</title><meta name="description" content="Learn to write WGSL shaders in Bevy 0.16 with this practical, step-by-step tutorial. Perfect for Rust developers new to modern shader programming."><meta name="generator" content="Publii Open-Source CMS for Static Site"><link rel="canonical" href="https://xav.github.io/xav.github.io/learning-wgsl-shaders-with-bevy-016-a-practical-journey.html"><link rel="alternate" type="application/atom+xml" href="https://xav.github.io/xav.github.io/feed.xml" title="Hexbee&#x27;s Dev Journal - RSS"><link rel="alternate" type="application/json" href="https://xav.github.io/xav.github.io/feed.json" title="Hexbee&#x27;s Dev Journal - JSON"><meta property="og:title" content="Learning WGSL Shaders with Bevy 0.16: A Practical Journey"><meta property="og:image" content="https://xav.github.io/xav.github.io/media/posts/2/cover.png"><meta property="og:image:width" content="1344"><meta property="og:image:height" content="768"><meta property="og:site_name" content="Hexbee's Dev Journal"><meta property="og:description" content="Learn to write WGSL shaders in Bevy 0.16 with this practical, step-by-step tutorial. Perfect for Rust developers new to modern shader programming."><meta property="og:url" content="https://xav.github.io/xav.github.io/learning-wgsl-shaders-with-bevy-016-a-practical-journey.html"><meta property="og:type" content="article"><link rel="stylesheet" href="https://xav.github.io/xav.github.io/assets/css/style.css?v=b09e72b2ca1a38c969d44da51bb22509"><script type="application/ld+json">{"@context":"http://schema.org","@type":"Article","mainEntityOfPage":{"@type":"WebPage","@id":"https://xav.github.io/xav.github.io/learning-wgsl-shaders-with-bevy-016-a-practical-journey.html"},"headline":"Learning WGSL Shaders with Bevy 0.16: A Practical Journey","datePublished":"2025-08-29T22:38+02:00","dateModified":"2025-12-09T22:39+01:00","image":{"@type":"ImageObject","url":"https://xav.github.io/xav.github.io/media/posts/2/cover.png","height":768,"width":1344},"description":"Learn to write WGSL shaders in Bevy 0.16 with this practical, step-by-step tutorial. Perfect for Rust developers new to modern shader programming.","author":{"@type":"Person","name":"Xavier Basty Kjellberg","url":"https://xav.github.io/xav.github.io/authors/xavier-basty-kjellberg/"},"publisher":{"@type":"Organization","name":"Xavier Basty Kjellberg","logo":{"@type":"ImageObject","url":"https://xav.github.io/xav.github.io/media/website/Logo-SideName.png","height":2297,"width":5553}}}</script><noscript><style>img[loading] {
+                    opacity: 1;
+                }</style></noscript></head><body class="post-template"><header class="top js-header"><a class="logo" href="https://xav.github.io/xav.github.io/"><img src="https://xav.github.io/xav.github.io/media/website/Logo-SideName.png" alt="Hexbee&#x27;s Dev Journal" width="5553" height="2297"></a></header><main class="post"><article class="content"><div class="hero"><header class="hero__content"><div class="wrapper"><h1>Learning WGSL Shaders with Bevy 0.16: A Practical Journey</h1><div class="feed__meta content__meta"><a href="https://xav.github.io/xav.github.io/authors/xavier-basty-kjellberg/" class="feed__author">Xavier Basty Kjellberg</a> <time datetime="2025-08-29T22:38" class="feed__date">August 29, 2025</time></div></div></header><figure class="hero__image"><div class="hero__image-wrapper"><img src="https://xav.github.io/xav.github.io/media/posts/2/cover.png" srcset="https://xav.github.io/xav.github.io/media/posts/2/responsive/cover-xs.png 640w, https://xav.github.io/xav.github.io/media/posts/2/responsive/cover-sm.png 768w, https://xav.github.io/xav.github.io/media/posts/2/responsive/cover-md.png 1024w, https://xav.github.io/xav.github.io/media/posts/2/responsive/cover-lg.png 1366w, https://xav.github.io/xav.github.io/media/posts/2/responsive/cover-xl.png 1600w, https://xav.github.io/xav.github.io/media/posts/2/responsive/cover-2xl.png 1920w" sizes="88vw" loading="eager" height="768" width="1344" alt=""></div></figure></div><div class="entry-wrapper content__entry"><h2 id="does-this-sound-familiar">Does This Sound Familiar?</h2><p>You’re a Bevy developer. You love Rust’s power and safety, and you’ve started to feel comfortable building scenes and game logic. But now you want to create something truly unique - a shimmering shield, a stylized water surface, a custom lighting model - and you realize you need to write a shader.</p><p>So you open a <code>.wgsl</code> file… and you hit a wall.</p><p>You look for tutorials, but they’re almost all for GLSL or Unity, using a different language and a different engine. You look at the official Bevy examples, but they seem to assume you already know how shaders work. You’re stuck in a frustrating gap: you know the engine, you know the language, but you don’t know how to bridge the two to speak directly to the GPU.</p><p><strong>I created this series because I was that developer.</strong></p><p>This is not a theoretical textbook or a high-level overview. It is the practical, step-by-step guide I wish I had when I was starting. It’s the result of systematically navigating that gap, figuring out the fundamentals, hitting the common pitfalls, and documenting what finally made the concepts “click.”</p><p>My goal is to provide a clear, linear path that takes you from the absolute basics of the graphics pipeline all the way to advanced techniques, with every single concept explained and demonstrated inside a working Bevy project. This is the journey of learning how to think in shaders, and I’m thrilled to share it with you.</p><h2 id="our-approach-a-practical-incremental-journey">Our Approach: A Practical, Incremental Journey</h2><p>This is a <strong>practical, hands-on series</strong>. We will learn by building, not just by reading. Every single article is built around a working Bevy project that you can run, modify, and experiment with. Our philosophy is that you don’t truly understand a concept until you’ve seen it work, broken it, and fixed it again.</p><p>Our journey is structured to build your knowledge from the ground up, ensuring you have a solid foundation before moving on to more complex topics. Here’s the path we’ll take:</p><ol><li><p><strong>First, we’ll build the foundation.</strong> We will demystify the <strong>Graphics Pipeline</strong> and learn the fundamental “alphabet” of WGSL - its data types, variables, and functions. You’ll understand where your code runs and the language it speaks.</p></li><li><p><strong>Then, we’ll take control of geometry.</strong> We’ll dive deep into the <strong>Vertex Shader</strong>, where you will learn to manipulate the very shape of your 3D models. You’ll create waving flags, rippling water, and fields of animated grass, learning how to breathe life into static meshes.</p></li><li><p><strong>Next, we’ll learn to paint those shapes with light and color.</strong> We’ll master the <strong>Fragment Shader</strong>, moving beyond simple colors to create procedural patterns, sample textures, and implement our own lighting models. This is where you’ll define the unique visual identity of your projects.</p></li><li><p><strong>Finally, we’ll explore the advanced frontier.</strong> With the fundamentals in place, we’ll unlock the true power of the GPU, exploring post-processing effects, compute shaders, performance optimization, and how to achieve specific artistic styles.</p></li></ol><p>By the end of this series, you won’t just know how to copy and paste shader code - you will have the confidence and the deep understanding to create your own custom rendering effects from scratch.</p><h2 id="who-this-series-is-for-and-what-youll-need">Who This Series Is For (And What You’ll Need)</h2><p>This series is designed for the curious Bevy developer who is ready to take the next step in their creative journey. If you’re comfortable with the basics of Rust and Bevy but feel like the GPU is still a “black box,” you’re in the perfect place.</p><h3 id="the-prerequisites">The Prerequisites</h3><p>This is not a “from zero” programming course. We’ll be moving at a steady pace, and I’ll assume you have a solid footing in the following areas:</p><ul><li><p><strong>A Good Grasp of Rust:</strong> You don’t need to be a systems-level expert, but you should be comfortable with core concepts like structs, traits, ownership, and the module system.</p></li><li><p><strong>Bevy Fundamentals:</strong> You should have worked through the official Bevy book or built a small project. You know what Components, Systems, and Resources are, and you feel comfortable setting up a basic scene.</p></li><li><p><strong>Basic Vector Math Intuition:</strong> You don’t need a math degree, but you should know what a vector is (<code>Vec3</code>) and have a general idea of what operations like adding, subtracting, or normalizing them mean. We’ll review the more complex math (like dot products and matrices) as we need it, focusing on intuition over raw proofs.</p></li></ul><h3 id="what-you-dont-need">What You Don’t Need</h3><p>This is just as important. You <strong>do not</strong> need:</p><ul><li>Any prior shader programming experience (that’s what we’re here to learn!).</li><li>A deep background in low-level graphics APIs like OpenGL, Vulkan, or DirectX.</li><li>To be a math wizard. A willingness to engage with the concepts is far more important than a formal education in linear algebra.</li></ul><p>Our goal is to build up your knowledge from first principles, right here in the Bevy ecosystem.</p><h2 id="setting-up-your-development-playground">Setting Up Your Development Playground</h2><p>A fast, smooth iteration loop is the secret to enjoying shader development. You want to be able to make a small change to your shader code and see the result instantly, without fighting with long compile times. Let’s create a Bevy project specifically configured for this rapid, creative workflow.</p><h3 id="recommended-tools">Recommended Tools</h3><p>While you can use any text editor, this series is written with a specific, highly effective setup in mind:</p><ul><li><ul><li><strong>Editor</strong>: <strong>Visual Studio Code (VS Code)</strong> is strongly recommended. Its rust-analyzer extension provides top-tier support for Rust, and there are excellent extensions that add syntax highlighting for WGSL, making your shader code much easier to read.</li></ul></li><li><p><strong>Graphics Debugger (Optional but Powerful)</strong>: For advanced debugging, a dedicated tool that can capture and inspect a single frame is invaluable. We won’t need this for the early articles, but knowing it exists is important.</p><ul><li><strong>Windows / Linux</strong>: <strong>RenderDoc</strong> is the open-source industry standard.</li><li><strong>macOS</strong>: Apple’s <strong>Metal GPU Debugger and Frame Capture</strong>, which is built directly into <strong>Xcode</strong>, is the essential tool for debugging Metal applications.</li></ul></li></ul><h3 id="step-1-install-the-essentials">Step 1: Install the Essentials</h3><p>First, ensure you have the Rust toolchain installed. If you’re already a Rust developer, you can likely skip this.</p><pre><code class="language-bash"># Install Rust if you don&#39;t have it
+curl --proto &#39;=https&#39; --tlsv1.2 -sSf https://sh.rustup.rs | sh
+</code></pre><h3 id="step-2-create-the-project-and-configure-cargotoml">Step 2: Create the Project and Configure <code>Cargo.toml</code></h3><p>Let’s create a new Bevy project that will be our home for this entire series.</p><pre><code class="language-bash">mkdir bevy-shader-journey
+cd bevy-shader-journey
+cargo init
+</code></pre><p>Now, replace the contents of your <code>Cargo.toml</code> file with the following configuration. We’re adding a few key dependencies and settings to optimize our development experience.</p><pre><code class="language-toml">[package]
+name = &quot;bevy-shader-journey&quot;
+version = &quot;0.1.0&quot;
+edition = &quot;2021&quot; # Sticking with the 2021 edition for maximum compatibility
+
+[dependencies]
+# The core Bevy engine, version 0.16
+bevy = { version = &quot;0.16&quot;, features = [&quot;file_watcher&quot;] }
+# For faster compile times in debug builds, you can enable this feature.
+# It doesn&#39;t work on Windows though :(
+# bevy = { version = &quot;0.16&quot;, features = [&quot;dynamic_linking&quot;, &quot;file_watcher&quot;] }
+
+# Interactive demo selection - makes it easy to jump between examples
+inquire = &quot;0.7&quot;
+
+# An incredibly useful debugging tool we&#39;ll use in later articles
+# to tweak shader values in real-time.
+bevy-inspector-egui = &quot;0.23&quot;
+
+# This section makes our local code compile faster (opt-level = 1)
+# while keeping our dependencies fully optimized (opt-level = 3).
+# It&#39;s a great trick for improving Bevy&#39;s debug build times.
+[profile.dev]
+opt-level = 1
+
+[profile.dev.package.&quot;*&quot;]
+opt-level = 3
+</code></pre><h3 id="step-3-create-the-project-directory-structure">Step 3: Create the Project Directory Structure</h3><p>A good project organization will make life much easier as we add more examples. Create the necessary directories and files with this command:</p><pre><code class="language-bash">mkdir -p assets/shaders src/demos src/materials
+
+# Create the module files
+touch src/demos/mod.rs
+touch src/materials/mod.rs
+</code></pre><p>This gives us:</p><ul><li><code>assets/shaders/</code>: Where all our <code>.wgsl</code> shader files will live.</li><li><code>src/demos/</code>: Where each article’s interactive example will go.</li><li><code>src/materials/</code>: Where the Rust “glue” code for our custom materials will go.</li></ul><h3 id="step-4-set-up-the-demo-selection-system">Step 4: Set Up the Demo Selection System</h3><p>Here’s where things get interesting. Instead of creating separate example files or constantly commenting and uncommenting code, we’re going to build a smart demo selection system. This will let you easily run any example from the series with a simple command.</p><p>Replace the contents of <code>src/main.rs</code> with this code:</p><pre><code class="language-rust">mod demos;
+mod materials;
+
+use std::env;
+
+struct Demo {
+    number: &amp;&#39;static str,
+    title: &amp;&#39;static str,
+    run: fn(),
+}
+
+impl Demo {
+    fn matches(&amp;self, query: &amp;str) -&gt; bool {
+        let query_lower = query.to_lowercase();
+        self.number.contains(&amp;query_lower) || self.title.to_lowercase().contains(&amp;query_lower)
+    }
+
+    fn display(&amp;self) -&gt; String {
+        format!(&quot;{} - {}&quot;, self.number, self.title)
+    }
+}
+
+fn main() {
+    // Registry of all available demos
+    let demos = vec![
+        Demo {
+            number: &quot;0.0&quot;,
+            title: &quot;Basic Scene Setup&quot;,
+            run: demos::basic_scene::run,
+        },
+        // More demos will be added as we progress through the series
+    ];
+
+    let args: Vec&lt;String&gt; = env::args().skip(1).collect();
+
+    let demo = if args.is_empty() {
+        select_demo_interactive(&amp;demos)
+    } else {
+        let query = args.join(&quot; &quot;);
+        find_and_select_demo(&amp;demos, &amp;query)
+    };
+
+    match demo {
+        Some(d) =&gt; {
+            println!(&quot;\n🚀 Running: {}\n&quot;, d.display());
+            (d.run)();
+        }
+        None =&gt; {
+            println!(&quot;No demo selected. Exiting.&quot;);
+            std::process::exit(0);
+        }
+    }
+}
+
+fn find_and_select_demo&lt;&#39;a&gt;(demos: &amp;&#39;a [Demo], query: &amp;str) -&gt; Option&lt;&amp;&#39;a Demo&gt; {
+    let matches: Vec&lt;&amp;Demo&gt; = demos.iter().filter(|d| d.matches(query)).collect();
+
+    match matches.len() {
+        0 =&gt; {
+            eprintln!(&quot;❌ No demos match &#39;{}&#39;\n&quot;, query);
+            show_available_demos(demos);
+            println!();
+            select_demo_interactive(demos)
+        }
+        1 =&gt; Some(matches[0]),
+        _ =&gt; {
+            eprintln!(&quot;⚠️  Multiple demos match &#39;{}&#39;:\n&quot;, query);
+            select_from_list(&amp;matches)
+        }
+    }
+}
+
+fn select_demo_interactive&lt;&#39;a&gt;(demos: &amp;&#39;a [Demo]) -&gt; Option&lt;&amp;&#39;a Demo&gt; {
+    println!(&quot;Available demos:&quot;);
+    show_available_demos(demos);
+    println!();
+
+    let demo_refs: Vec&lt;&amp;Demo&gt; = demos.iter().collect();
+    select_from_list(&amp;demo_refs)
+}
+
+fn show_available_demos(demos: &amp;[Demo]) {
+    for demo in demos {
+        println!(&quot;  • {}&quot;, demo.display());
+    }
+}
+
+fn select_from_list&lt;&#39;a&gt;(demos: &amp;[&amp;&#39;a Demo]) -&gt; Option&lt;&amp;&#39;a Demo&gt; {
+    use inquire::Select;
+
+    let options: Vec&lt;String&gt; = demos.iter().map(|d| d.display()).collect();
+    let selected = Select::new(&quot;Select a demo to run:&quot;, options).prompt();
+
+    match selected {
+        Ok(selected_text) =&gt; demos.iter().find(|d| d.display() == selected_text).copied(),
+        Err(_) =&gt; {
+            println!(&quot;Selection cancelled.&quot;);
+            None
+        }
+    }
+}
+</code></pre><p><strong>What does this do?</strong> This system lets you run any demo from the series with intuitive commands:</p><pre><code class="language-rust"># Run by article number
+cargo run 1.1
+
+# Run by partial title match
+cargo run pipeline
+
+# Multiple matches? You&#39;ll get an interactive menu with arrow keys
+cargo run shader
+
+# No arguments? See all available demos and select with arrow keys
+cargo run
+</code></pre><p>As you progress through the series, you’ll simply add new demos to the <code>demos</code> vector in <code>main.rs</code>, and they’ll automatically be available through this selection system. No managing multiple example files or hunting through code!</p><h3 id="step-5-create-your-first-demo-module">Step 5: Create Your First Demo Module</h3><p>Now let’s create the first demo that we registered in our system. Create <code>src/demos/basic_scene.rs</code>:</p><pre><code class="language-rust">use bevy::prelude::*;
+
+pub fn run() {
+    App::new()
+        .add_plugins(DefaultPlugins.set(AssetPlugin {
+            // Enable hot reloading
+            watch_for_changes_override: Some(true),
+            ..default()
+        }))
+        .add_systems(Startup, setup)
+        .add_systems(Update, rotate_camera)
+        .run();
+}
+
+fn setup(
+    mut commands: Commands,
+    mut meshes: ResMut&lt;Assets&lt;Mesh&gt;&gt;,
+    mut materials: ResMut&lt;Assets&lt;StandardMaterial&gt;&gt;,
+) {
+    // Add a simple scene we can apply our shaders to
+    commands.spawn((
+        Mesh3d(meshes.add(Cuboid::new(2.0, 2.0, 2.0))),
+        MeshMaterial3d(materials.add(Color::srgb(0.8, 0.7, 0.6))),
+    ));
+
+    // Light
+    commands.spawn((
+        PointLight {
+            shadows_enabled: true,
+            ..default()
+        },
+        Transform::from_xyz(4.0, 8.0, 4.0),
+    ));
+
+    // Camera
+    commands.spawn((
+        Camera3d::default(),
+        Transform::from_xyz(-2.5, 4.5, 9.0).looking_at(Vec3::ZERO, Vec3::Y),
+    ));
+}
+
+// Simple camera rotation to see our shaders from different angles
+fn rotate_camera(time: Res&lt;Time&gt;, mut camera_query: Query&lt;&amp;mut Transform, With&lt;Camera3d&gt;&gt;) {
+    for mut transform in camera_query.iter_mut() {
+        let radius = 9.0;
+        let angle = time.elapsed_secs() * 0.5;
+        transform.translation.x = angle.cos() * radius;
+        transform.translation.z = angle.sin() * radius;
+        transform.look_at(Vec3::ZERO, Vec3::Y);
+    }
+}
+</code></pre><p>And register it in <code>src/demos/mod.rs</code>:</p><pre><code class="language-rust">pub mod basic_scene;
+</code></pre><p><strong>The pattern you’ll follow for every article:</strong></p><ol><li>Create a new module in <code>src/demos/</code> (e.g., <code>first_shader.rs</code>)</li><li>Implement a <code>pub fn run()</code> function that starts a Bevy app</li><li>Add the module to <code>src/demos/mod.rs</code></li><li>Register it in the <code>demos</code> vector in <code>main.rs</code></li></ol><p>That’s it! The demo selection system handles the rest.</p><h3 id="step-5-test-your-setup">Step 5: Test Your Setup</h3><p>You’re all set! Let’s make sure everything works:</p><p>bash</p><pre><code class="language-bash"># Run the basic scene demo directly
+cargo run 0.0
+
+# Or try the interactive selection
+cargo run
+</code></pre><p>You should see a simple scene with a rotating camera orbiting around a cube.</p><p><strong>Try experimenting with the selection system:</strong></p><pre><code class="language-bash">cargo run basic     # Matches &quot;Basic Scene Setup&quot;
+cargo run scene     # Same result
+cargo run xyz       # No match - shows all demos and lets you select
+</code></pre><p><strong>Congratulations!</strong> You now have a robust development environment with:</p><ul><li>Fast iteration with hot-reloading for shader changes</li><li>An intuitive demo selection system for jumping between examples</li><li>A clean project structure that will scale as you learn</li></ul><p>When you save changes to a shader file in the <code>assets</code> directory, Bevy will automatically detect the change and reload it in real-time. This instant feedback is the key to learning and experimenting with shaders effectively.</p><h2 id="understanding-the-project-structure">Understanding the Project Structure</h2><p>Here’s how everything fits together:</p><pre><code class="language-plaintext">bevy-shader-journey/
+├── assets/
+│   └── shaders/              # Your .wgsl shader files
+│       └── first_shader.wgsl # (We&#39;ll create these as we go)
+├── src/
+│   ├── main.rs               # Demo selection system
+│   ├── demos/                # One module per article
+│   │   ├── mod.rs
+│   │   ├── basic_scene.rs    # Article 0.0
+│   │   └── first_shader.rs   # (Article 1.1, etc.)
+│   └── materials/            # Custom material definitions
+│       └── mod.rs
+└── Cargo.toml
+</code></pre><p><strong>The workflow:</strong></p><ol><li>Read an article to understand the concepts</li><li>Run the demo: <code>cargo run [article-number]</code></li><li>Look at the code in <code>src/demos/[name].rs</code></li><li>Examine the shader in <code>assets/shaders/[name].wgsl</code></li><li>Experiment - change values, break things, see what happens!</li><li>Move to the next article when ready</li></ol><h2 id="a-mindset-for-success">A Mindset for Success</h2><p>You are now ready to begin. As you dive into the world of shaders, keeping a few practical tips in mind will make the learning process smoother and more enjoyable.</p><ul><li><strong>Start Simple, Then Iterate.</strong> The golden rule of shader development. Always begin with the absolute most basic version of an effect that works, even if it’s just a solid color. Once you have a working baseline, add complexity one small step at a time. This makes debugging infinitely easier.</li><li><strong>Embrace the Visual Debugging Loop.</strong> Your primary debugging tool is the screen itself. Is the effect too bright? Multiply by 0.5. Is it upside down? Multiply a coordinate by <code>-1.0</code>. Get comfortable making small, incremental changes and immediately observing the visual result.</li><li><strong>Use Descriptive Variable Names.</strong> Shaders can quickly become a maze of vector math. A variable named <code>surfaceToLightDirection</code> is a thousand times clearer than <code>vecL</code>. Your future self, trying to debug the code, will thank you.</li><li><strong>Save Your Progress Frequently.</strong> Shader development is highly experimental. You’ll often go down a path that leads to a visual mess. Using a version control system like Git to commit frequently after each small success will give you the freedom to experiment without fear of losing your working code.</li><li><strong>Jump Between Examples Freely.</strong> One of the beauties of our demo selection system is that you can easily revisit previous techniques. Forgot how normal mapping works? Just <code>cargo run normal</code> and refresh your memory. Want to compare two approaches? Run them side by side!</li></ul><h2 id="lets-get-started">Let’s Get Started!</h2><p>Your development environment is configured, your mindset is right, and the path is laid out before you. That blank <code>.wgsl</code> file is no longer an intimidating obstacle - it’s a canvas waiting for your creativity.</p><p>The demo selection system gives you the freedom to explore at your own pace, jumping between concepts and building your understanding incrementally. Each article in this series adds a new demo to your toolkit, and by the end, you’ll have a comprehensive library of shader techniques at your fingertips.</p><p>It’s time to dive in and learn how to speak directly to the GPU.</p><p>Next up: [1.1 - Understanding the Graphics Pipeline]</p><hr><h2 id="quick-reference">Quick Reference</h2><p><strong>Running Demos:</strong></p><pre><code class="language-bash">cargo run 1.1              # By article number
+cargo run pipeline         # By keyword
+cargo run                  # Interactive selection
+</code></pre><p><strong>Project Structure:</strong></p><ul><li><code>src/main.rs</code> - Demo selection system</li><li><code>src/demos/</code> - One module per article (each exports <code>pub fn run()</code>)</li><li><code>src/materials/</code> - Custom material definitions</li><li><code>assets/shaders/</code> - WGSL shader files</li></ul><p><strong>Development Tips:</strong></p><ul><li>Save a shader file → Bevy auto-reloads it</li><li>Small changes → Immediate visual feedback</li><li>Commit working code frequently</li><li>Use descriptive names in shader code</li></ul></div><footer class="content__footer"><div class="entry-wrapper"><p class="content__updated">This article was updated on December 9, 2025</p><div class="content__actions"><ul class="content__tag"><li><a href="https://xav.github.io/xav.github.io/tags/webgpu/">bevy</a></li><li><a href="https://xav.github.io/xav.github.io/tags/rust/">rust</a></li><li><a href="https://xav.github.io/xav.github.io/tags/shaders/">shaders</a></li><li><a href="https://xav.github.io/xav.github.io/tags/wgsl/">wgsl</a></li></ul><div class="content__share"><button class="btn--icon content__share-button js-content__share-button"><svg width="20" height="20" aria-hidden="true"><use xlink:href="https://xav.github.io/xav.github.io/assets/svg/svg-map.svg#share"></use></svg> <span>Share It</span></button><div class="content__share-popup js-content__share-popup"></div></div></div><div class="content__bio bio"><div><h3 class="h4 bio__name"><a href="https://xav.github.io/xav.github.io/authors/xavier-basty-kjellberg/" rel="author">Xavier Basty Kjellberg</a></h3></div></div></div><nav class="content__nav"><div class="wrapper"><div class="content__nav-inner"><div class="content__nav-next"><a href="https://xav.github.io/xav.github.io/11-understanding-the-graphics-pipeline.html" class="content__nav-link" rel="next"><div><span>Next</span> 1.1 - Understanding the Graphics Pipeline</div><figure class="content__nav-image"><img src="https://xav.github.io/xav.github.io/media/posts/3/responsive/cover-xs.png" class="lazyload" loading="lazy" alt="" height="768" width="768"></figure></a></div></div></div></nav></footer></article></main><footer class="footer footer--glued"><div class="wrapper"><div class="footer__copyright"><p>Powered by Publii</p></div><button id="backToTop" class="footer__bttop" aria-label="Back to top" title="Back to top"><svg width="20" height="20"><use xlink:href="https://xav.github.io/xav.github.io/assets/svg/svg-map.svg#toparrow"/></svg></button></div></footer><script defer="defer" src="https://xav.github.io/xav.github.io/assets/js/scripts.min.js?v=ffcbea6c02c8178d10092962b235a5b0"></script><script>window.publiiThemeMenuConfig={mobileMenuMode:'sidebar',animationSpeed:300,submenuWidth: 'auto',doubleClickTime:500,mobileMenuExpandableSubmenus:true,relatedContainerForOverlayMenuSelector:'.top'};</script><script>var images = document.querySelectorAll('img[loading]');
+        for (var i = 0; i < images.length; i++) {
+            if (images[i].complete) {
+                images[i].classList.add('is-loaded');
+            } else {
+                images[i].addEventListener('load', function () {
+                    this.classList.add('is-loaded');
+                }, false);
+            }
+        }</script></body></html>
