@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/">
     <title>Hexbee&#x27;s Dev Journal</title>
-    <link href="https://xav.github.io/xav.github.io/feed.xml" rel="self" />
-    <link href="https://xav.github.io/xav.github.io" />
+    <link href="https://xav.github.io/feed.xml" rel="self" />
+    <link href="https://xav.github.io" />
     <updated>2025-12-09T22:42:59+01:00</updated>
     <author>
         <name>Xavier Basty Kjellberg</name>
     </author>
-    <id>https://xav.github.io/xav.github.io</id>
+    <id>https://xav.github.io</id>
 
     <entry>
         <title>1.1 - Understanding the Graphics Pipeline</title>
         <author>
             <name>Xavier Basty Kjellberg</name>
         </author>
-        <link href="https://xav.github.io/xav.github.io/11-understanding-the-graphics-pipeline.html"/>
-        <id>https://xav.github.io/xav.github.io/11-understanding-the-graphics-pipeline.html</id>
-        <media:content url="https://xav.github.io/xav.github.io/media/posts/3/cover.png" medium="image" />
+        <link href="https://xav.github.io/11-understanding-the-graphics-pipeline.html"/>
+        <id>https://xav.github.io/11-understanding-the-graphics-pipeline.html</id>
+        <media:content url="https://xav.github.io/media/posts/3/cover.png" medium="image" />
             <category term="wgsl"/>
             <category term="shaders"/>
             <category term="rust"/>
@@ -25,13 +25,13 @@
         <updated>2025-12-09T22:42:59+01:00</updated>
             <summary type="html">
                 <![CDATA[
-                        <img src="https://xav.github.io/xav.github.io/media/posts/3/cover.png" alt="" />
+                        <img src="https://xav.github.io/media/posts/3/cover.png" alt="" />
                     What We’re Learning Welcome to the start of your shader programming journey! Before we can write a single line of WGSL code to create shimmering water or a glowing sword, we must first answer a fundamental question: what exactly is a shader? At its core, a shader is&hellip;
                 ]]>
             </summary>
         <content type="html">
             <![CDATA[
-                    <p><img src="https://xav.github.io/xav.github.io/media/posts/3/cover.png" class="type:primaryImage" alt="" /></p>
+                    <p><img src="https://xav.github.io/media/posts/3/cover.png" class="type:primaryImage" alt="" /></p>
                 <h2 id="what-were-learning">What We’re Learning</h2>
 <p>Welcome to the start of your shader programming journey! Before we can write a single line of WGSL code to create shimmering water or a glowing sword, we must first answer a fundamental question: <strong>what exactly is a shader?</strong></p><p>At its core, a shader is a small, highly-focused program that you, the developer, write. Unlike the Rust code that runs on your computer’s main processor (the CPU), a shader runs directly on the thousands of parallel cores of your Graphics Processing Unit (GPU). This gives you direct, low-level control over how your game’s graphics are rendered. Shaders are the modern key to controlling the look, feel, and performance of everything you see in a real-time 3D application.</p><p>This first chapter pulls back the curtain on the rendering process. We will build a complete mental model of the <strong>graphics pipeline</strong> - the step-by-step assembly line a GPU uses to turn the raw data of your 3D models into the final, vibrant pixels on your screen.</p><p>Understanding this pipeline is the single most important foundation for shader programming. Without it, writing shader code is like trying to assemble a car without knowing what an engine or a wheel does. With it, every new concept will have a clear place to belong.</p><p>By the end of this chapter, you’ll understand:</p><ul>
 <li><strong>The Big Picture:</strong> The journey of your 3D model data from the CPU (your Bevy app) to the GPU (the rendering factory).</li>
@@ -662,9 +662,9 @@ pub mod debug_pipeline;
         <author>
             <name>Xavier Basty Kjellberg</name>
         </author>
-        <link href="https://xav.github.io/xav.github.io/learning-wgsl-shaders-with-bevy-016-a-practical-journey.html"/>
-        <id>https://xav.github.io/xav.github.io/learning-wgsl-shaders-with-bevy-016-a-practical-journey.html</id>
-        <media:content url="https://xav.github.io/xav.github.io/media/posts/2/cover.png" medium="image" />
+        <link href="https://xav.github.io/learning-wgsl-shaders-with-bevy-016-a-practical-journey.html"/>
+        <id>https://xav.github.io/learning-wgsl-shaders-with-bevy-016-a-practical-journey.html</id>
+        <media:content url="https://xav.github.io/media/posts/2/cover.png" medium="image" />
             <category term="wgsl"/>
             <category term="shaders"/>
             <category term="rust"/>
@@ -673,13 +673,13 @@ pub mod debug_pipeline;
         <updated>2025-08-29T22:38:00+02:00</updated>
             <summary type="html">
                 <![CDATA[
-                        <img src="https://xav.github.io/xav.github.io/media/posts/2/cover.png" alt="" />
+                        <img src="https://xav.github.io/media/posts/2/cover.png" alt="" />
                     Does This Sound Familiar? You’re a Bevy developer. You love Rust’s power and safety, and you’ve started to feel comfortable building scenes and game logic. But now you want to create something truly unique - a shimmering shield, a stylized water surface, a custom lighting&hellip;
                 ]]>
             </summary>
         <content type="html">
             <![CDATA[
-                    <p><img src="https://xav.github.io/xav.github.io/media/posts/2/cover.png" class="type:primaryImage" alt="" /></p>
+                    <p><img src="https://xav.github.io/media/posts/2/cover.png" class="type:primaryImage" alt="" /></p>
                 <h2 id="does-this-sound-familiar">Does This Sound Familiar?</h2>
 <p>You’re a Bevy developer. You love Rust’s power and safety, and you’ve started to feel comfortable building scenes and game logic. But now you want to create something truly unique - a shimmering shield, a stylized water surface, a custom lighting model - and you realize you need to write a shader.</p><p>So you open a <code>.wgsl</code> file… and you hit a wall.</p><p>You look for tutorials, but they’re almost all for GLSL or Unity, using a different language and a different engine. You look at the official Bevy examples, but they seem to assume you already know how shaders work. You’re stuck in a frustrating gap: you know the engine, you know the language, but you don’t know how to bridge the two to speak directly to the GPU.</p><p><strong>I created this series because I was that developer.</strong></p><p>This is not a theoretical textbook or a high-level overview. It is the practical, step-by-step guide I wish I had when I was starting. It’s the result of systematically navigating that gap, figuring out the fundamentals, hitting the common pitfalls, and documenting what finally made the concepts “click.”</p><p>My goal is to provide a clear, linear path that takes you from the absolute basics of the graphics pipeline all the way to advanced techniques, with every single concept explained and demonstrated inside a working Bevy project. This is the journey of learning how to think in shaders, and I’m thrilled to share it with you.</p><h2 id="our-approach-a-practical-incremental-journey">Our Approach: A Practical, Incremental Journey</h2>
 <p>This is a <strong>practical, hands-on series</strong>. We will learn by building, not just by reading. Every single article is built around a working Bevy project that you can run, modify, and experiment with. Our philosophy is that you don’t truly understand a concept until you’ve seen it work, broken it, and fixed it again.</p><p>Our journey is structured to build your knowledge from the ground up, ensuring you have a solid foundation before moving on to more complex topics. Here’s the path we’ll take:</p><ol>
