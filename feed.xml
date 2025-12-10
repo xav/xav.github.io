@@ -3,7 +3,7 @@
     <title>Hexbee&#x27;s Dev Journal</title>
     <link href="https://xav.github.io/feed.xml" rel="self" />
     <link href="https://xav.github.io" />
-    <updated>2025-12-09T23:04:50+01:00</updated>
+    <updated>2025-12-10T18:53:58+01:00</updated>
     <author>
         <name>Xavier Basty Kjellberg</name>
     </author>
@@ -14,8 +14,8 @@
         <author>
             <name>Xavier Basty Kjellberg</name>
         </author>
-        <link href="https://xav.github.io/11-understanding-the-graphics-pipeline.html"/>
-        <id>https://xav.github.io/11-understanding-the-graphics-pipeline.html</id>
+        <link href="https://xav.github.io/11-understanding-the-graphics-pipeline/"/>
+        <id>https://xav.github.io/11-understanding-the-graphics-pipeline/</id>
         <media:content url="https://xav.github.io/media/posts/3/cover.png" medium="image" />
             <category term="wgsl"/>
             <category term="shaders"/>
@@ -26,7 +26,7 @@
             <summary type="html">
                 <![CDATA[
                         <img src="https://xav.github.io/media/posts/3/cover.png" alt="" />
-                    What We’re Learning Welcome to the start of your shader programming journey! Before we can write a single line of WGSL code to create shimmering water or a glowing sword, we must first answer a fundamental question: what exactly is a shader? At its core, a shader is&hellip;
+                    What We’re Learning Welcome to the start of your shader programming journey! Before we can write a single line of WGSL code to create shimmering&hellip;
                 ]]>
             </summary>
         <content type="html">
@@ -193,7 +193,7 @@ fn vertex(input: VertexInput) -&gt; VertexOutput {
 <li>Procedurally animated grass swaying in the wind</li>
 </ul>
 <h3 id="stage-3-the-rasterizer-gpu---automatic-hardware">Stage 3: The Rasterizer (GPU - Automatic Hardware)</h3>
-<p>This stage is a piece of dedicated, non-programmable hardware on the GPU. It’s an automatic, incredibly fast process that you don’t write code for. The rasterizer takes the processed vertices from the vertex shader (three at a time to form a triangle) and figures out which pixels on the screen that triangle covers.</p><p>For every single pixel it covers, it generates a <strong>“fragment.”</strong> A fragment is a “potential pixel” - it contains all the information needed to calculate a final color.</p><p>This is also where the magic of <strong>interpolation</strong> happens. The rasterizer looks at the data you passed out of the vertex shader for each of the triangle’s three vertices and smoothly blends it across the surface of the triangle for each fragment.</p><p>Think of it like this:</p><figure class="post__image"><img loading="lazy" src="" alt="Uploading file..." data-is-external-image="true"></figure><ul>
+<p>This stage is a piece of dedicated, non-programmable hardware on the GPU. It’s an automatic, incredibly fast process that you don’t write code for. The rasterizer takes the processed vertices from the vertex shader (three at a time to form a triangle) and figures out which pixels on the screen that triangle covers.</p><p>For every single pixel it covers, it generates a <strong>“fragment.”</strong> A fragment is a “potential pixel” - it contains all the information needed to calculate a final color.</p><p>This is also where the magic of <strong>interpolation</strong> happens. The rasterizer looks at the data you passed out of the vertex shader for each of the triangle’s three vertices and smoothly blends it across the surface of the triangle for each fragment.</p><p>Think of it like this:</p><figure class="post__image"><img loading="lazy" src="rasterizer" alt="1.1 - figure - Rasterizer.png" data-is-external-image="true"></figure><ul>
 <li>A fragment near the top will receive a reddish color.</li>
 <li>A fragment on the left edge will get a purplish color (red + blue).</li>
 <li>A fragment right in the middle will get a muddy, grayish color, which is the mathematical average of red, green, and blue.</li>
@@ -662,8 +662,8 @@ pub mod debug_pipeline;
         <author>
             <name>Xavier Basty Kjellberg</name>
         </author>
-        <link href="https://xav.github.io/learning-wgsl-shaders-with-bevy-016-a-practical-journey.html"/>
-        <id>https://xav.github.io/learning-wgsl-shaders-with-bevy-016-a-practical-journey.html</id>
+        <link href="https://xav.github.io/learning-wgsl-shaders-with-bevy-016-a-practical-journey/"/>
+        <id>https://xav.github.io/learning-wgsl-shaders-with-bevy-016-a-practical-journey/</id>
         <media:content url="https://xav.github.io/media/posts/2/cover.png" medium="image" />
             <category term="wgsl"/>
             <category term="shaders"/>
@@ -674,7 +674,7 @@ pub mod debug_pipeline;
             <summary type="html">
                 <![CDATA[
                         <img src="https://xav.github.io/media/posts/2/cover.png" alt="" />
-                    Does This Sound Familiar? You’re a Bevy developer. You love Rust’s power and safety, and you’ve started to feel comfortable building scenes and game logic. But now you want to create something truly unique - a shimmering shield, a stylized water surface, a custom lighting&hellip;
+                    Does This Sound Familiar? You’re a Bevy developer. You love Rust’s power and safety, and you’ve started to feel comfortable building scenes and game logic.
                 ]]>
             </summary>
         <content type="html">
