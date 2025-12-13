@@ -26,7 +26,7 @@
             <summary type="html">
                 <![CDATA[
                         <img src="https://xav.github.io/media/posts/6/cover.png" alt="" />
-                    What We’re Learning In the last article, we learned the “nouns” of the WGSL language - the data types like vec3&lt;f32&gt; and mat4x4&lt;f32&gt; that describe the digital clay of&hellip;
+                    What We’re Learning In the last article, we learned the “nouns” of the WGSL language - the data types like vec3&lt;f32&gt; and mat4x4&lt;f32&gt; that describe the digital clay of our 3D world. We have the materials, but data on its own is static. To create anything dynamic, responsive, or&hellip;
                 ]]>
             </summary>
         <content type="html">
@@ -743,7 +743,7 @@ let color = select(BLACK, WHITE, brightness &gt; 0.5);
             <summary type="html">
                 <![CDATA[
                         <img src="https://xav.github.io/media/posts/5/cover2.png" alt="" />
-                    What We’re Learning In our last article, we built a mental model of the graphics pipeline: a VFX studio where “Layout Artists” (Vertex Shaders) position&hellip;
+                    What We’re Learning In our last article, we built a mental model of the graphics pipeline: a VFX studio where “Layout Artists” (Vertex Shaders) position geometry and “Coloring Artists” (Fragment Shaders) paint the final pixels. But what materials do these artists work with? How do&hellip;
                 ]]>
             </summary>
         <content type="html">
@@ -1431,7 +1431,7 @@ let scaled = a * 2.0; // -&gt; vec2(2.0, 4.0)
             <summary type="html">
                 <![CDATA[
                         <img src="https://xav.github.io/media/posts/3/cover.png" alt="" />
-                    What We’re Learning Welcome to the start of your shader programming journey! Before we can write a single line of WGSL code to create shimmering&hellip;
+                    What We’re Learning Welcome to the start of your shader programming journey! Before we can write a single line of WGSL code to create shimmering water or a glowing sword, we must first answer a fundamental question: what exactly is a shader? At its core, a shader is&hellip;
                 ]]>
             </summary>
         <content type="html">
@@ -2079,7 +2079,7 @@ pub mod debug_pipeline;
             <summary type="html">
                 <![CDATA[
                         <img src="https://xav.github.io/media/posts/2/cover.png" alt="" />
-                    Does This Sound Familiar? You’re a Bevy developer. You love Rust’s power and safety, and you’ve started to feel comfortable building scenes and game logic.
+                    Does This Sound Familiar? You’re a Bevy developer. You love Rust’s power and safety, and you’ve started to feel comfortable building scenes and game logic. But now you want to create something truly unique - a shimmering shield, a stylized water surface, a custom lighting&hellip;
                 ]]>
             </summary>
         <content type="html">
