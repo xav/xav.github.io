@@ -3,7 +3,7 @@
     <title>Hexbee&#x27;s Dev Journal</title>
     <link href="https://xav.github.io/feed.xml" rel="self" />
     <link href="https://xav.github.io" />
-    <updated>2025-12-13T19:38:31+01:00</updated>
+    <updated>2025-12-13T19:39:48+01:00</updated>
     <author>
         <name>Xavier Basty Kjellberg</name>
     </author>
@@ -567,11 +567,11 @@ pub mod vector_demo;
 </tr>
 </tbody></table>
 <h4 id="what-youre-seeing">What You’re Seeing</h4>
-<p>![screenshot 1](/media/files/2.2 - screenshot 1.png)
-![screenshot 2](/media/files/2.2 - screenshot 2.png)
-![screenshot 3](/media/files/2.2 - screenshot 3.png)
-![screenshot 4](/media/files/2.2 - screenshot 4.png)
-![screenshot 5](/media/files/2.2 - screenshot 5.png)</p><p>Each mode corresponds to a different branch in our fragment shader’s logic.</p><table>
+<p>[screenshot 1](/media/files/2.2 - screenshot 1.png)
+[screenshot 2](/media/files/2.2 - screenshot 2.png)
+[screenshot 3](/media/files/2.2 - screenshot 3.png)
+[screenshot 4](/media/files/2.2 - screenshot 4.png)
+[screenshot 5](/media/files/2.2 - screenshot 5.png)</p><p>Each mode corresponds to a different branch in our fragment shader’s logic.</p><table>
 <thead>
 <tr>
 <th>Mode</th>
