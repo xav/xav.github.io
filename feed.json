@@ -20,9 +20,13 @@
                 "name": "Xavier Basty Kjellberg"
             },
             "tags": [
+                   "wgsl",
+                   "shaders",
+                   "rust",
+                   "bevy"
             ],
             "date_published": "2025-12-13T19:27:36+01:00",
-            "date_modified": "2025-12-13T19:27:36+01:00"
+            "date_modified": "2025-12-13T19:29:46+01:00"
         },
         {
             "id": "https://xav.github.io/11-understanding-the-graphics-pipeline/",

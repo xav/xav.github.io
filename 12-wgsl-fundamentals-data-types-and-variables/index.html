@@ -4,8 +4,8 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-            <title>1.2 - WGSL Fundamentals - Data Types &amp; Variables - Hexbee&#x27;s Dev Journal </title>
-        <meta name="description" content="## What We're Learning In our last article, we built a mental model of the graphics pipeline: a VFX studio where 'Layout Artists' (Vertex Shaders)&hellip;">
+            <title>Bevy &amp; WGSL: Data Types &amp; Variables</title>
+        <meta name="description" content="Master WGSL data types for Bevy shaders. Our guide covers scalars, vectors (vec3, vec4), swizzling, and variables (let/var) for your first shader.">
          
         <meta name="generator" content="Publii Open-Source CMS for Static Site">
 <link rel="stylesheet" href="https://xav.github.io/media/plugins/syntaxHighlighter/prism-black.css" />
@@ -13,10 +13,10 @@
         <link rel="alternate" type="application/atom+xml" href="https://xav.github.io/feed.xml" title="Hexbee&#x27;s Dev Journal - RSS">
 <link rel="alternate" type="application/json" href="https://xav.github.io/feed.json" title="Hexbee&#x27;s Dev Journal - JSON">
 
-        <meta property="og:title" content="1.2 - WGSL Fundamentals - Data Types & Variables"><meta property="og:image" content="https://xav.github.io/media/website/Logo-SideName.png"><meta property="og:image:width" content="5553"><meta property="og:image:height" content="2297"><meta property="og:site_name" content="Hexbee's Dev Journal"><meta property="og:description" content="## What We're Learning In our last article, we built a mental model of the graphics pipeline: a VFX studio where 'Layout Artists' (Vertex Shaders)&hellip;"><meta property="og:url" content="https://xav.github.io/12-wgsl-fundamentals-data-types-and-variables/"><meta property="og:type" content="article">
+        <meta property="og:title" content="1.2 - WGSL Fundamentals - Data Types & Variables"><meta property="og:image" content="https://xav.github.io/media/website/Logo-SideName.png"><meta property="og:image:width" content="5553"><meta property="og:image:height" content="2297"><meta property="og:site_name" content="Hexbee's Dev Journal"><meta property="og:description" content="Master WGSL data types for Bevy shaders. Our guide covers scalars, vectors (vec3, vec4), swizzling, and variables (let/var) for your first shader."><meta property="og:url" content="https://xav.github.io/12-wgsl-fundamentals-data-types-and-variables/"><meta property="og:type" content="article">
         
         <link rel="stylesheet" href="https://xav.github.io/assets/css/style.css?v=e19cced6341d15e84c3d202e5e386440">
-        <script type="application/ld+json">{"@context":"http://schema.org","@type":"Article","mainEntityOfPage":{"@type":"WebPage","@id":"https://xav.github.io/12-wgsl-fundamentals-data-types-and-variables/"},"headline":"1.2 - WGSL Fundamentals - Data Types & Variables","datePublished":"2025-12-13T19:27+01:00","dateModified":"2025-12-13T19:27+01:00","image":{"@type":"ImageObject","url":"https://xav.github.io/media/website/Logo-SideName.png","height":2297,"width":5553},"description":"## What We're Learning In our last article, we built a mental model of the graphics pipeline: a VFX studio where 'Layout Artists' (Vertex Shaders)&hellip;","author":{"@type":"Person","name":"Xavier Basty Kjellberg","url":"https://xav.github.io/authors/xavier-basty-kjellberg/"},"publisher":{"@type":"Organization","name":"Xavier Basty Kjellberg","logo":{"@type":"ImageObject","url":"https://xav.github.io/media/website/Logo-SideName.png","height":2297,"width":5553}}}</script>
+        <script type="application/ld+json">{"@context":"http://schema.org","@type":"Article","mainEntityOfPage":{"@type":"WebPage","@id":"https://xav.github.io/12-wgsl-fundamentals-data-types-and-variables/"},"headline":"1.2 - WGSL Fundamentals - Data Types & Variables","datePublished":"2025-12-13T19:27+01:00","dateModified":"2025-12-13T19:29+01:00","image":{"@type":"ImageObject","url":"https://xav.github.io/media/website/Logo-SideName.png","height":2297,"width":5553},"description":"Master WGSL data types for Bevy shaders. Our guide covers scalars, vectors (vec3, vec4), swizzling, and variables (let/var) for your first shader.","author":{"@type":"Person","name":"Xavier Basty Kjellberg","url":"https://xav.github.io/authors/xavier-basty-kjellberg/"},"publisher":{"@type":"Organization","name":"Xavier Basty Kjellberg","logo":{"@type":"ImageObject","url":"https://xav.github.io/media/website/Logo-SideName.png","height":2297,"width":5553}}}</script>
         <noscript>
             <style>
                 img[loading] {
@@ -48,6 +48,12 @@
                      </span>
                </div>
 
+                  <div class="post__tags">
+                           <a href="https://xav.github.io/tags/webgpu/" class="invert">bevy</a>
+                           <a href="https://xav.github.io/tags/rust/" class="invert">rust</a>
+                           <a href="https://xav.github.io/tags/shaders/" class="invert">shaders</a>
+                           <a href="https://xav.github.io/tags/wgsl/" class="invert">wgsl</a>
+                  </div>
          </header>
 
 

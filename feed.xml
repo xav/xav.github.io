@@ -3,7 +3,7 @@
     <title>Hexbee&#x27;s Dev Journal</title>
     <link href="https://xav.github.io/feed.xml" rel="self" />
     <link href="https://xav.github.io" />
-    <updated>2025-12-13T19:27:36+01:00</updated>
+    <updated>2025-12-13T19:29:46+01:00</updated>
     <author>
         <name>Xavier Basty Kjellberg</name>
     </author>
@@ -16,6 +16,10 @@
         </author>
         <link href="https://xav.github.io/12-wgsl-fundamentals-data-types-and-variables/"/>
         <id>https://xav.github.io/12-wgsl-fundamentals-data-types-and-variables/</id>
+            <category term="wgsl"/>
+            <category term="shaders"/>
+            <category term="rust"/>
+            <category term="bevy"/>
 
         <updated>2025-12-13T19:27:36+01:00</updated>
             <summary type="html">
