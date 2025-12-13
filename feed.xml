@@ -3,7 +3,7 @@
     <title>Hexbee&#x27;s Dev Journal</title>
     <link href="https://xav.github.io/feed.xml" rel="self" />
     <link href="https://xav.github.io" />
-    <updated>2025-12-10T19:01:12+01:00</updated>
+    <updated>2025-12-13T19:18:55+01:00</updated>
     <author>
         <name>Xavier Basty Kjellberg</name>
     </author>
@@ -193,7 +193,7 @@ fn vertex(input: VertexInput) -&gt; VertexOutput {
 <li>Procedurally animated grass swaying in the wind</li>
 </ul>
 <h3 id="stage-3-the-rasterizer-gpu---automatic-hardware">Stage 3: The Rasterizer (GPU - Automatic Hardware)</h3>
-<p>This stage is a piece of dedicated, non-programmable hardware on the GPU. It’s an automatic, incredibly fast process that you don’t write code for. The rasterizer takes the processed vertices from the vertex shader (three at a time to form a triangle) and figures out which pixels on the screen that triangle covers.</p><p>For every single pixel it covers, it generates a <strong>“fragment.”</strong> A fragment is a “potential pixel” - it contains all the information needed to calculate a final color.</p><p>This is also where the magic of <strong>interpolation</strong> happens. The rasterizer looks at the data you passed out of the vertex shader for each of the triangle’s three vertices and smoothly blends it across the surface of the triangle for each fragment.</p><p>Think of it like this:</p><figure class="post__image"><img src="media/files/1.1%20-%20figure%20-%20Rasterizer.png" alt="rasterizer" data-is-external-image="true"></figure><ul>
+<p>This stage is a piece of dedicated, non-programmable hardware on the GPU. It’s an automatic, incredibly fast process that you don’t write code for. The rasterizer takes the processed vertices from the vertex shader (three at a time to form a triangle) and figures out which pixels on the screen that triangle covers.</p><p>For every single pixel it covers, it generates a <strong>“fragment.”</strong> A fragment is a “potential pixel” - it contains all the information needed to calculate a final color.</p><p>This is also where the magic of <strong>interpolation</strong> happens. The rasterizer looks at the data you passed out of the vertex shader for each of the triangle’s three vertices and smoothly blends it across the surface of the triangle for each fragment.</p><p>Think of it like this:</p><figure class="post__image"><img src="/media/files/1.1%20-%20figure%20-%20Rasterizer.png" alt="rasterizer" data-is-external-image="true"></figure><ul>
 <li>A fragment near the top will receive a reddish color.</li>
 <li>A fragment on the left edge will get a purplish color (red + blue).</li>
 <li>A fragment right in the middle will get a muddy, grayish color, which is the mathematical average of red, green, and blue.</li>
