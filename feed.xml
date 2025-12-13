@@ -3,12 +3,729 @@
     <title>Hexbee&#x27;s Dev Journal</title>
     <link href="https://xav.github.io/feed.xml" rel="self" />
     <link href="https://xav.github.io" />
-    <updated>2025-12-13T19:52:15+01:00</updated>
+    <updated>2025-12-13T19:58:17+01:00</updated>
     <author>
         <name>Xavier Basty Kjellberg</name>
     </author>
     <id>https://xav.github.io</id>
 
+    <entry>
+        <title>1.3 - WGSL Fundamentals - Functions &amp; Control Flow</title>
+        <author>
+            <name>Xavier Basty Kjellberg</name>
+        </author>
+        <link href="https://xav.github.io/13-wgsl-fundamentals-functions-and-control-flow/"/>
+        <id>https://xav.github.io/13-wgsl-fundamentals-functions-and-control-flow/</id>
+        <media:content url="https://xav.github.io/media/posts/6/cover.png" medium="image" />
+            <category term="wgsl"/>
+            <category term="shaders"/>
+            <category term="rust"/>
+            <category term="bevy"/>
+
+        <updated>2025-09-06T19:57:00+02:00</updated>
+            <summary type="html">
+                <![CDATA[
+                        <img src="https://xav.github.io/media/posts/6/cover.png" alt="" />
+                    What We’re Learning In the last article, we learned the “nouns” of the WGSL language - the data types like vec3&lt;f32&gt; and mat4x4&lt;f32&gt; that describe the digital clay of&hellip;
+                ]]>
+            </summary>
+        <content type="html">
+            <![CDATA[
+                    <p><img src="https://xav.github.io/media/posts/6/cover.png" class="type:primaryImage" alt="" /></p>
+                <h2 id="what-were-learning">What We’re Learning</h2>
+<p>In the last article, we learned the “nouns” of the WGSL language - the data types like <code>vec3&lt;f32&gt;</code> and <code>mat4x4&lt;f32&gt;</code> that describe the digital clay of our 3D world. We have the materials, but data on its own is static. To create anything dynamic, responsive, or visually interesting, we need to perform operations, make decisions, and repeat tasks. It’s time to learn the “verbs” and “grammar” of WGSL.</p><p>This article is about giving your shader <strong>logic</strong>. We’ll start with <strong>functions</strong>, the cornerstone of organization. Functions allow us to package complex operations into clean, reusable tools. Instead of a single, monolithic block of code, we’ll build a custom toolkit of functions that makes our shaders modular, readable, and powerful.</p><p>With functions as our building blocks, we’ll introduce <strong>control flow</strong>. This is what gives your shader intelligence. Using if/else, your shader can finally ask questions: “Is this fragment close to a light source?”, “Should this pixel be part of a stripe or a solid color?”. Using <strong>loops</strong>, it can perform the repetitive work essential for complex effects, like layering multiple waves for a water ripple or accumulating light from several sources.</p><p>Finally, we’ll uncover a unique and powerful tool exclusive to fragment shaders: the <code>discard</code> keyword, which lets us create actual see-through holes and cutouts in our geometry.</p><p>By the end of this article, you’ll understand how to:</p><ul>
+<li>Organize your code into clean, reusable tools with <strong>functions</strong>.</li>
+<li>Give your shaders decision-making abilities with <strong>conditional logic</strong> (<code>if/else</code>).</li>
+<li>Build complex, layered effects by repeating actions with <strong>loops</strong>.</li>
+<li>Take direct control of shader execution with return and the powerful <code>discard</code> keyword.</li>
+</ul>
+<h2 id="functions-the-building-blocks-of-shader-logic">Functions: The Building Blocks of Shader Logic</h2>
+<p>As your shader effects become more complex, writing all your code inside the main <code>@fragment</code> or <code>@vertex</code> entry points will quickly become unmanageable. The key to writing clean, powerful, and reusable shader code is to break down your logic into <strong>functions</strong>. This practice, known as abstraction, transforms your main shader logic from a giant wall of math into a clear, high-level sequence of steps.</p><h3 id="function-syntax-in-wgsl">Function Syntax in WGSL</h3>
+<p>The function syntax in WGSL is nearly identical to Rust’s, using the <code>fn</code> keyword, typed parameters, and an arrow (<code>-&gt;</code>) to specify the return type.</p><pre><code class="language-wgsl">// A function to calculate perceived brightness (luminance) of a linear RGB color.
+// The magic numbers are standardized weights that model the human eye&#39;s
+// sensitivity to red, green, and blue light.
+fn get_luminance(color: vec3&lt;f32&gt;) -&gt; f32 {
+    let weights = vec3&lt;f32&gt;(0.2126, 0.7152, 0.0722);
+    return dot(color, weights);
+}
+
+// A function to blend between two colors. WGSL&#39;s built-in `mix()` function
+// is a highly optimized way to perform this linear interpolation.
+fn blend_colors(a: vec3&lt;f32&gt;, b: vec3&lt;f32&gt;, factor: f32) -&gt; vec3&lt;f32&gt; {
+    // `mix(a, b, t)` is equivalent to `a * (1.0 - t) + b * t`.
+    return mix(a, b, factor);
+}
+</code></pre>
+<h3 id="an-important-rule-no-function-overloading">An Important Rule: No Function Overloading</h3>
+<p>Unlike some other languages, WGSL keeps its function resolution simple: <strong>every function must have a unique name.</strong> You cannot define two functions with the same name, even if they have different parameter types. This is known as “function overloading,” and it is not supported.</p><pre><code class="language-wgsl">// ✗ ILLEGAL in WGSL - this will cause a compile error.
+fn scale(v: vec2&lt;f32&gt;, s: f32) -&gt; vec2&lt;f32&gt; { /* ... */ }
+fn scale(v: vec3&lt;f32&gt;, s: f32) -&gt; vec3&lt;f32&gt; { /* ... */ } // Error: name `scale` is already in use.
+
+// ✓ The CORRECT way in WGSL is to use unique, descriptive names.
+fn scale_vec2(v: vec2&lt;f32&gt;, s: f32) -&gt; vec2&lt;f32&gt; { /* ... */ }
+fn scale_vec3(v: vec3&lt;f32&gt;, s: f32) -&gt; vec3&lt;f32&gt; { /* ... */ }
+</code></pre>
+<p>This design choice favors explicitness and clarity, ensuring that a function call is never ambiguous.</p><h2 id="making-decisions-conditional-logic">Making Decisions: Conditional Logic</h2>
+<p>To create dynamic and responsive visuals, your shader needs to be able to ask questions and change its behavior based on the answers. This is the role of conditional logic.</p><h3 id="ifelse-ifelse-statements"><code>if</code>/<code>else if</code>/<code>else</code> Statements</h3>
+<p>The <code>if</code> statement is the most fundamental tool for decision-making. It allows you to execute a block of code only when a certain condition is true. The syntax is identical to Rust and many other languages.</p><pre><code class="language-wgsl">// This function quantizes a brightness value into one of three distinct levels.
+fn classify_brightness(value: f32) -&gt; vec3&lt;f32&gt; {
+    // If the value is greater than 0.7, return bright white.
+    if value &gt; 0.7 {
+        return vec3&lt;f32&gt;(1.0); // Bright white
+    }
+    // Otherwise, if it&#39;s greater than 0.3, return medium gray.
+    else if value &gt; 0.3 {
+        return vec3&lt;f32&gt;(0.5); // Medium gray
+    }
+    // In all other cases, return black.
+    else {
+        return vec3&lt;f32&gt;(0.0); // Black
+    }
+}
+</code></pre>
+<p>You can combine conditions using standard logical operators (<code>&amp;&amp;</code>, <code>||</code>, <code>!</code>) and comparison operators (<code>==</code>, <code>!=</code>, <code>&lt;</code>, <code>&gt;</code>).</p><p><strong>Performance Note:</strong> <code>if</code> statements can be surprisingly expensive on a GPU. GPUs achieve their speed by having many cores execute the same instruction in lockstep. If an <code>if</code> condition is true for some pixels in a group but false for others, the group experiences “thread divergence.” The GPU must execute both the <code>if</code> and the <code>else</code> blocks, with each core “masking off” the instructions that don’t apply to it. This serializes the execution and negates the GPU’s parallel advantage. For simple choices, a branchless alternative is often much faster.</p><h3 id="the-select-function-a-branchless-alternative">The <code>select()</code> Function: A Branchless Alternative</h3>
+<p>Many languages have a “ternary operator” like <code>condition ? value_if_true : value_if_false</code>. <strong>WGSL does not have the <code>? :</code> syntax.</strong></p><p>The WGSL equivalent is the powerful, built-in <code>select()</code> function.</p><pre><code class="language-wgsl">// select(value_if_false, value_if_true, condition);
+
+// Example:
+let is_bright = brightness &gt; 0.5;
+let color = select(
+    vec3&lt;f32&gt;(0.0), // Value if `is_bright` is false
+    vec3&lt;f32&gt;(1.0), // Value if `is_bright` is true
+    is_bright       // The boolean condition
+);
+</code></pre>
+<p>This is a <strong>branchless</strong> operation. The GPU evaluates both the <code>true</code> and <code>false</code> values in parallel and then simply selects the correct one based on the condition. This completely avoids the performance penalty of thread divergence for simple assignments.</p><p>Let’s compare the two approaches:</p><pre><code class="language-wgsl">// Using an `if` statement (potential for divergence):
+var color_if: vec3&lt;f32&gt;;
+if brightness &gt; 0.5 {
+    color_if = vec3&lt;f32&gt;(1.0); // White
+} else {
+    color_if = vec3&lt;f32&gt;(0.0); // Black
+}
+
+// Using `select()` (branchless, concise, and often faster):
+let color_select = select(
+    vec3&lt;f32&gt;(0.0),      // Black (if condition is false)
+    vec3&lt;f32&gt;(1.0),      // White (if condition is true)
+    brightness &gt; 0.5     // The condition
+);
+</code></pre>
+<h4 id="a-critical-warning-about-select-and-function-calls">A Critical Warning About <code>select()</code> and Function Calls</h4>
+<p>It is syntactically valid to pass the results of function calls into <code>select()</code>, but you must understand the performance trap: <code>select()</code> always evaluates both arguments.</p><pre><code class="language-rust">// ✗ DANGEROUS: Both expensive functions are called for every pixel!
+let final_color = select(
+    calculate_complex_shadows(),  // This ALWAYS runs.
+    calculate_direct_lighting(),  // This ALWAYS runs too.
+    is_in_shadow
+);
+
+// ✓ BETTER: Use `if` for expensive, mutually exclusive branches.
+var final_color: vec3&lt;f32&gt;;
+if is_in_shadow {
+    final_color = calculate_complex_shadows(); // Only runs when needed.
+} else {
+    final_color = calculate_direct_lighting(); // Only runs when needed.
+}
+</code></pre>
+<ul>
+<li><strong>Use <code>select()</code> with function calls only if the functions are cheap.</strong> If they are simple one-liners or trivial calculations, the benefit of avoiding a branch is worth it.</li>
+<li><strong>NEVER use <code>select()</code> with expensive function calls.</strong> You will be forcing the GPU to do twice the work necessary for every single pixel. In this scenario, an <code>if/else</code> statement is far more performant, even with the risk of thread divergence, because the total amount of computation is significantly lower.</li>
+</ul>
+<p><strong>Rule of Thumb:</strong> Use <code>if</code> statements for complex logic or when choosing between the results of expensive function calls. Use <code>select()</code> for simple, single-line value assignments based on a boolean condition.</p><h2 id="repeating-actions-loops">Repeating Actions: Loops</h2>
+<p>Loops are essential for creating complex, layered effects that would be tedious or impossible to write by hand. They allow you to repeat a block of code multiple times, which is perfect for tasks like summing up light contributions, generating procedural noise, or applying a series of blurs.</p><p>WGSL provides three types of loops, each suited to different situations.</p><h3 id="for-loops-the-standard-workhorse"><code>for</code> Loops: The Standard Workhorse</h3>
+<p>The <code>for</code> loop is the most common and structured way to repeat an action a specific number of times. Its predictable structure - initializer, condition, and update step - makes it the ideal choice for most shader tasks.</p><p><strong>Syntax:</strong> <code>for ( &lt;initializer&gt;; &lt;condition&gt;; &lt;update&gt; ) { ... }</code></p><pre><code class="language-wgsl">// A classic `for` loop that executes 8 times, with `i` taking values from 0 through 7.
+// Note: The loop counter `i` must be declared as a `var`.
+for (var i: i32 = 0; i &lt; 8; i = i + 1) {
+    // Loop body executes here
+}
+
+// Practical Example: Creating layered sine waves for a ripple effect.
+// This is a common technique in procedural generation.
+fn layered_waves(x_pos: f32) -&gt; f32 {
+    var sum: f32 = 0.0;
+
+    // We add 4 layers (&quot;octaves&quot;) of sine waves.
+    for (var i: i32 = 0; i &lt; 4; i = i + 1) {
+        let i_f32 = f32(i);
+        // Each layer has double the frequency and half the amplitude of the last.
+        let frequency = pow(2.0, i_f32);
+        let amplitude = pow(0.5, i_f32);
+        sum += sin(x_pos * frequency) * amplitude;
+    }
+    return sum;
+}
+</code></pre>
+<h3 id="while-loops"><code>while</code> Loops</h3>
+<p>A <code>while</code> loop is simpler: it continues to execute as long as its condition remains <code>true</code>. It’s useful when you don’t know the exact number of iterations in advance, but be cautious, as this can easily lead to the performance issues discussed below.</p><p><strong>Syntax:</strong> <code>while ( &lt;condition&gt; ) { ... }</code></p><pre><code class="language-wgsl">fn find_first_step_above_threshold(start_val: f32, threshold: f32) -&gt; i32 {
+    var value = start_val;
+    var steps: i32 = 0;
+
+    // Keep looping as long as `value` is below the `threshold`.
+    while (value &lt; threshold) {
+        value *= 1.1; // Increase value by 10%
+        steps += 1;
+    }
+    return steps;
+}
+</code></pre>
+<h3 id="loop-the-infinite-loop-with-break-and-continue"><code>loop</code>: The Infinite Loop with <code>break</code> and <code>continue</code></h3>
+<p>The loop keyword creates a true infinite loop that relies on internal logic to terminate. Its power comes from using the <code>break</code> and <code>continue</code> keywords to control its execution from within.</p><ul>
+<li><code>break</code>: Immediately exits the innermost loop it’s in.</li>
+<li><code>continue</code>: Immediately stops the current iteration and jumps to the beginning of the next one.</li>
+</ul>
+<p>You can also use <code>break</code> and <code>continue</code> in <code>for</code> and <code>while</code> loops, but they are essential for managing an explicit loop. This structure is often used for search algorithms like ray marching, where the exit condition is complex.</p><p><strong>Syntax:</strong> <code>loop { ... if &lt;exit_condition&gt; { break; } ... }</code></p><pre><code class="language-wgsl">// A simplified ray marching example to find a sphere at the origin.
+fn raymarch_simple_sphere(ray_origin: vec3&lt;f32&gt;, ray_dir: vec3&lt;f32&gt;) -&gt; f32 {
+    var current_pos = ray_origin;
+    loop {
+        let dist_to_surface = length(current_pos) - 1.0; // Distance to sphere of radius 1
+
+        // If we are close enough, we hit the sphere.
+        if dist_to_surface &lt; 0.01 {
+            break; // Exit the loop, we found it!
+        }
+
+        // If we&#39;ve traveled too far without a hit, we missed.
+        // This is a crucial safety break to prevent an infinite loop.
+        if length(current_pos - ray_origin) &gt; 100.0 {
+            break;
+        }
+
+        // Take a &quot;safe&quot; step along the ray.
+        current_pos += ray_dir * dist_to_surface;
+    }
+    return length(current_pos - ray_origin); // Return the total distance traveled
+}
+</code></pre>
+<h3 id="a-critical-performance-warning-keep-loops-simple">A Critical Performance Warning: Keep Loops Simple</h3>
+<p><strong>This is one of the most important performance rules in shader programming.</strong> The GPU achieves its incredible speed by executing instructions in perfect lockstep. Complex, unpredictable loops can break this parallelism.</p><ul>
+<li><strong>GOOD (Statically Analyzable):</strong> A <code>for</code> loop with a constant, hardcoded number of iterations is ideal. The shader compiler can perform a critical optimization called <strong>“loop unrolling,”</strong> essentially pasting the loop’s body code N times. This completely eliminates the looping overhead and is extremely fast for the GPU.</li>
+</ul>
+<pre><code class="language-wgsl">// ✓ IDEAL: The compiler knows this runs exactly 8 times. It can be unrolled.
+for (var i = 0; i &lt; 8; i = i + 1) { /* ... */ }
+</code></pre>
+<ul>
+<li><strong>BAD (Dynamic Loop):</strong> A loop whose number of iterations depends on a uniform or a runtime calculation can be significantly slower. The GPU cannot predict how many times it will run, which prevents unrolling and can lead to stalls and inefficient execution.</li>
+</ul>
+<pre><code class="language-wgsl">// ⚠ DANGEROUS: The compiler doesn&#39;t know the value of `some_uniform`.
+// This prevents optimization and can be much slower.
+for (var i = 0; i &lt; some_uniform; i = i + 1) { /* ... */ }
+</code></pre>
+<p><strong>Practical Advice:</strong> For performance-critical code, always prefer for loops with a small, constant number of iterations. If you need a variable number of iterations, try to keep the maximum possible number low and consistent.</p><h2 id="controlling-execution-flow">Controlling Execution Flow</h2>
+<p>Beyond the structured logic of <code>if</code> and loops, WGSL provides two powerful keywords that give you direct control over a function’s execution path: <code>return</code> and <code>discard</code>. They are your tools for bailing out early when further calculation is unnecessary or wasteful.</p><h3 id="return-exiting-a-function-early"><code>return</code>: Exiting a Function Early</h3>
+<p>While <code>return</code> is used at the end of functions to provide the output value, it can be placed anywhere inside a function to exit immediately. This is an incredibly useful pattern for improving both code readability and performance by handling simple “edge cases” at the very top of a function. It allows you to avoid wrapping your main logic in complex, nested <code>if</code> statements.</p><h4 id="the-guard-clause-pattern">The “Guard Clause” Pattern</h4>
+<p>This best practice involves checking for invalid or simple conditions first and exiting early. These checks are called “guard clauses.”</p><pre><code class="language-wgsl">// ✗ Bad: Deeply nested and hard to read. The core logic is buried.
+fn calculate_light_nested(intensity: f32, color: vec3&lt;f32&gt;) -&gt; vec3&lt;f32&gt; {
+    var final_color = vec3&lt;f32&gt;(0.0);
+    if intensity &gt; 0.0 {
+        if any(color &gt; vec3&lt;f32&gt;(0.0)) {
+            // ... main complex lighting logic here ...
+            final_color = color * intensity;
+        }
+    }
+    return final_color;
+}
+
+// ✓ Good: Clean, flat, and easy to understand with &quot;guard clauses&quot;.
+fn calculate_light_guards(intensity: f32, color: vec3&lt;f32&gt;) -&gt; vec3&lt;f32&gt; {
+    // Guard clause 1: If there&#39;s no light, the result is black. Exit immediately.
+    if intensity &lt;= 0.0 {
+        return vec3&lt;f32&gt;(0.0);
+    }
+    // Guard clause 2: If the surface has no color, it can&#39;t reflect light. Exit.
+    if all(color == vec3&lt;f32&gt;(0.0)) {
+        return vec3&lt;f32&gt;(0.0);
+    }
+
+    // Main logic is now at the top level, free of extra indentation.
+    // ... main complex lighting logic here ...
+    return color * intensity;
+}
+</code></pre>
+<p>Using guard clauses is a key strategy for writing clean, efficient, and maintainable shader code. It separates your preconditions from your core algorithm.</p><h3 id="discard-a-unique-fragment-shader-tool"><code>discard</code>: A Unique Fragment Shader Tool</h3>
+<p>The <code>discard</code> keyword is a specialized tool with a critical rule: <strong>it can only be used in a fragment shader.</strong> You cannot use it in a vertex shader or a compute shader.</p><p>When a fragment shader executes the <code>discard</code> keyword, it immediately stops all processing for the current fragment. The GPU effectively pretends that pixel of the triangle never existed.</p><ul>
+<li>The fragment is <strong>not</strong> written to the screen’s color buffer.</li>
+<li>The fragment is <strong>not</strong> written to the depth buffer.</li>
+<li>It’s as if that pixel was never rendered, leaving whatever was drawn behind it perfectly visible.</li>
+</ul>
+<p>This allows you to create “cutouts” or holes in your geometry, making a solid surface appear transparent in certain areas without the complexities and performance costs of traditional alpha blending.</p><pre><code class="language-wgsl">@fragment
+fn fragment(in: VertexOutput) -&gt; @location(0) vec4&lt;f32&gt; {
+    // Sample a texture that has an alpha channel for the cutout mask.
+    let surface_color = textureSample(my_texture, my_sampler, in.uv);
+
+    // If the alpha value in the texture is below a certain threshold...
+    if surface_color.a &lt; 0.5 {
+        discard; // ...throw this pixel away completely.
+    }
+
+    // For all other pixels that were NOT discarded, this code will run.
+    return vec4&lt;f32&gt;(surface_color.rgb, 1.0);
+}
+</code></pre>
+<h4 id="common-use-cases-for-discard">Common Use Cases for <code>discard</code></h4>
+<ul>
+<li><strong>Foliage</strong>: Rendering leaves on a tree by using a leaf texture on a simple quad and discarding the transparent parts.</li>
+<li><strong>Fences and Grates</strong>: Modeling a complex chain-link fence is difficult. It’s much easier to use a simple plane with a fence texture and discard the holes.</li>
+<li><strong>Procedural Patterns</strong>: Creating patterns with actual see-through holes, as we’ll demonstrate in our complete example.</li>
+</ul>
+<h4 id="performance-impact">Performance Impact</h4>
+<p>Using <code>discard</code> is a performance trade-off.</p><ul>
+<li><strong>The Good</strong>: It can be faster than traditional alpha blending because you don’t need to sort transparent objects. Opaque parts of the mesh can still benefit from depth testing.</li>
+<li><strong>The Bad</strong>: The mere presence of a <code>discard</code> statement in a shader can force the GPU to disable an important optimization called “Early-Z”. Normally, the GPU can test if a pixel is hidden behind another surface before running the fragment shader. With <code>discard</code>, it can’t know if a pixel will be thrown away until after the shader runs, so it must run the shader for every pixel, even those that will end up being hidden.</li>
+</ul>
+<p>For hard-edged cutouts (like fences or leaves), <code>discard</code> is often the right tool for the job.</p><hr>
+<h2 id="complete-example-interactive-pattern-generator">Complete Example: Interactive Pattern Generator</h2>
+<p>Theory is great, but the best way to solidify your understanding is to build something. We will now create a complete, interactive material that uses all the concepts we’ve just learned - functions, <code>if</code>/<code>else</code>, loops, and even <code>discard</code> - to generate a variety of procedural patterns in real-time.</p><h3 id="our-goal">Our Goal</h3>
+<p>We will build a single, powerful shader that can generate seven different patterns (checkerboards, circles, waves, etc.). We will control which pattern is displayed and how it’s scaled using <code>u32</code> and <code>f32</code> uniforms sent from our Bevy application.</p><h3 id="what-this-project-demonstrates">What This Project Demonstrates</h3>
+<ol>
+<li><strong>Functions for Reusability:</strong> Each of the seven patterns is encapsulated in its own clean, self-contained function (e.g., <code>checkerboard()</code>, <code>circles()</code>, <code>waves()</code>). This is the core of organized shader programming.</li>
+<li><strong><code>if</code>/<code>else</code> for Control Flow:</strong> Inside the main <code>@fragment</code> function, we use a chain of <code>if</code>/<code>else</code> if statements to act as a “router,” calling the appropriate pattern function based on the <code>pattern_type</code> uniform sent from our Rust code.</li>
+<li><strong>Loops for Complex Effects:</strong> The “Waves” pattern uses a <code>for</code> loop to layer multiple sine waves, creating a more complex and interesting visual than a single <code>sin()</code> call could achieve.</li>
+<li><strong><code>discard</code> for See-Through Effects:</strong> The “Cutout Circles” pattern uses the <code>discard</code> keyword to create actual, physical holes in our sphere, allowing you to see the background through it. This is a powerful, real-world demonstration of <code>discard</code> in action.</li>
+</ol>
+<p>This project is a perfect microcosm of real-world shader development: breaking a complex problem into smaller functions and using control flow to combine them into a dynamic and configurable final result.</p><h3 id="the-shader-assetsshaderspattern_genwgsl">The Shader (<code>assets/shaders/pattern_gen.wgsl</code>)</h3>
+<p>This WGSL file contains a library of small, single-purpose functions, each designed to generate a specific mathematical pattern. The main <code>@fragment</code> function acts as a controller, using a large <code>if</code>/<code>else if</code> chain to check a uniform value and call the appropriate pattern function based on it.</p><p><strong>Focus on the Structure:</strong> Don’t worry about the exact math inside each pattern function for now. You’ll see many unfamiliar built-in functions like <code>floor()</code>, <code>length()</code>, <code>fract()</code>, … These are part of WGSL’s powerful standard library, which we will cover in detail in the very next article. For this example, just focus on how we use functions, <code>if</code>, <code>loop</code>, and <code>discard</code> to structure the shader’s logic.</p><pre><code class="language-wgsl">#import bevy_pbr::mesh_functions
+#import bevy_pbr::view_transformations::position_world_to_clip
+#import bevy_pbr::forward_io::VertexOutput
+
+struct PatternMaterial {
+    pattern_type: u32,
+    scale: f32,
+}
+
+@group(2) @binding(0)
+var&lt;uniform&gt; material: PatternMaterial;
+
+@vertex
+fn vertex(
+    @builtin(instance_index) instance_index: u32,
+    @location(0) position: vec3&lt;f32&gt;,
+    @location(1) normal: vec3&lt;f32&gt;,
+) -&gt; VertexOutput {
+    var out: VertexOutput;
+
+    let world_from_local = mesh_functions::get_world_from_local(instance_index);
+    let world_position = mesh_functions::mesh_position_local_to_world(
+        world_from_local,
+        vec4&lt;f32&gt;(position, 1.0)
+    );
+
+    out.position = position_world_to_clip(world_position.xyz);
+    out.world_normal = mesh_functions::mesh_normal_local_to_world(normal, instance_index);
+    out.world_position = world_position;
+
+    return out;
+}
+
+// Function: Create a checkerboard pattern
+fn checkerboard(uv: vec2&lt;f32&gt;, scale: f32) -&gt; f32 {
+    let scaled = uv * scale;
+    let x = i32(floor(scaled.x));
+    let y = i32(floor(scaled.y));
+    let checker = (x + y) &amp; 1;
+    return f32(checker);
+}
+
+// Function: Create concentric circles
+fn circles(uv: vec2&lt;f32&gt;, scale: f32) -&gt; f32 {
+    let dist = length(uv);
+    let ring = floor(dist * scale) % 2.0;
+    return ring;
+}
+
+// Function: Create a grid pattern
+fn grid(uv: vec2&lt;f32&gt;, scale: f32) -&gt; f32 {
+    let scaled = abs(uv) * scale;
+    let grid_x = step(0.9, fract(scaled.x));
+    let grid_y = step(0.9, fract(scaled.y));
+    return max(grid_x, grid_y);
+}
+
+// Function: Create diagonal stripes
+fn stripes(uv: vec2&lt;f32&gt;, scale: f32) -&gt; f32 {
+    let diagonal = (uv.x + uv.y) * scale;
+    let stripe = floor(diagonal) % 2.0;
+    return stripe;
+}
+
+// Function: Create dots pattern
+fn dots(uv: vec2&lt;f32&gt;, scale: f32) -&gt; f32 {
+    let scaled = uv * scale;
+    let cell = fract(scaled);
+    let center = vec2&lt;f32&gt;(0.5, 0.5);
+    let dist = length(cell - center);
+
+    // Use step for hard edge, or smoothstep for soft edge
+    return 1.0 - step(0.3, dist);
+}
+
+// Function: Create a wave pattern using loops
+fn waves(uv: vec2&lt;f32&gt;, scale: f32) -&gt; f32 {
+    var sum = 0.0;
+
+    // Create layered waves using a loop
+    for (var i = 0; i &lt; 5; i = i + 1) {
+        let freq = f32(i + 1) * scale;
+        let amp = 1.0 / f32(i + 1);
+        sum = sum + sin(uv.x * freq) * amp;
+    }
+
+    // Normalize to 0-1 range
+    return (sum + 1.0) * 0.5;
+}
+
+// Function: Create cutout circles (demonstrates discard)
+fn cutout_circles(uv: vec2&lt;f32&gt;, scale: f32) -&gt; f32 {
+    let scaled = uv * scale;
+    let cell = fract(scaled);
+    let center = vec2&lt;f32&gt;(0.5, 0.5);
+    let dist = length(cell - center);
+
+    // Return distance for discard decision
+    return dist;
+}
+
+@fragment
+fn fragment(in: VertexOutput) -&gt; @location(0) vec4&lt;f32&gt; {
+    // Use XY coordinates for 2D patterns
+    let uv = in.world_position.xy;
+
+    var pattern: f32 = 0.0;
+
+    // Select pattern based on material type
+    if material.pattern_type == 0u {
+        pattern = checkerboard(uv, material.scale);
+    } else if material.pattern_type == 1u {
+        pattern = circles(uv, material.scale);
+    } else if material.pattern_type == 2u {
+        pattern = grid(uv, material.scale);
+    } else if material.pattern_type == 3u {
+        pattern = stripes(uv, material.scale);
+    } else if material.pattern_type == 4u {
+        pattern = dots(uv, material.scale);
+    } else if material.pattern_type == 5u {
+        pattern = waves(uv, material.scale);
+    } else if material.pattern_type == 6u {
+        // Cutout circles - demonstrates discard
+        let dist = cutout_circles(uv, material.scale);
+
+        // Discard pixels inside circles to create holes
+        if dist &lt; 0.3 {
+            discard;
+        }
+
+        pattern = 1.0;  // Everything else is white
+    }
+
+    // Create color from pattern
+    let color = vec3&lt;f32&gt;(pattern);
+
+    return vec4&lt;f32&gt;(color, 1.0);
+}
+</code></pre>
+<h3 id="the-rust-material-srcmaterialspattern_genrs">The Rust Material (<code>src/materials/pattern_gen.rs</code>)</h3>
+<p>This file defines the <code>PatternMaterial</code> struct in Rust. Its layout perfectly mirrors the PatternMaterial uniform struct in the shader, containing a <code>u32</code> for the pattern type and an <code>f32</code> for the scale. The <code>AsBindGroup</code> derive macro handles the work of making this data available to the GPU.</p><pre><code class="language-rust">use bevy::prelude::*;
+use bevy::render::render_resource::{AsBindGroup, ShaderRef};
+
+#[derive(Asset, TypePath, AsBindGroup, Debug, Clone)]
+pub struct PatternMaterial {
+    #[uniform(0)]
+    pub pattern_type: u32,
+    #[uniform(0)]
+    pub scale: f32,
+}
+
+impl Material for PatternMaterial {
+    fn fragment_shader() -&gt; ShaderRef {
+        &quot;shaders/pattern_gen.wgsl&quot;.into()
+    }
+
+    fn vertex_shader() -&gt; ShaderRef {
+        &quot;shaders/pattern_gen.wgsl&quot;.into()
+    }
+}
+</code></pre>
+<p>Don’t forget to add it to <code>src/materials/mod.rs</code>:</p><pre><code class="language-rust">// ... other materials
+pub mod pattern_gen;
+</code></pre>
+<h3 id="the-demo-module-srcdemospattern_genrs">The Demo Module (<code>src/demos/pattern_gen.rs</code>)</h3>
+<p>This Rust module sets up our Bevy scene. It spawns a sphere with our custom <code>PatternMaterial</code>. Critically, it contains the <code>handle_input</code> and update_ui systems, <code>which</code> listen for keyboard input and directly modify the <code>pattern_type</code> and <code>scale</code> fields on the material asset, triggering the visual change in the shader on the next frame.</p><pre><code class="language-rust">use crate::materials::pattern_gen::PatternMaterial;
+use bevy::prelude::*;
+
+pub fn run() {
+    App::new()
+        .add_plugins(DefaultPlugins)
+        .add_plugins(MaterialPlugin::&lt;PatternMaterial&gt;::default())
+        .add_systems(Startup, setup)
+        .add_systems(Update, (rotate_camera, handle_input, update_ui))
+        .run();
+}
+
+fn setup(
+    mut commands: Commands,
+    mut meshes: ResMut&lt;Assets&lt;Mesh&gt;&gt;,
+    mut materials: ResMut&lt;Assets&lt;PatternMaterial&gt;&gt;,
+) {
+    // Spawn a sphere
+    commands.spawn((
+        Mesh3d(meshes.add(Sphere::new(1.0).mesh().uv(32, 18))),
+        MeshMaterial3d(materials.add(PatternMaterial {
+            pattern_type: 0,
+            scale: 3.0,
+        })),
+    ));
+
+    // Light
+    commands.spawn((
+        PointLight {
+            shadows_enabled: true,
+            ..default()
+        },
+        Transform::from_xyz(4.0, 8.0, 4.0),
+    ));
+
+    // Camera
+    commands.spawn((
+        Camera3d::default(),
+        Transform::from_xyz(-2.5, 4.5, 9.0).looking_at(Vec3::ZERO, Vec3::Y),
+    ));
+
+    // UI
+    commands.spawn((
+        Text::new(&quot;&quot;),
+        Node {
+            position_type: PositionType::Absolute,
+            top: Val::Px(10.0),
+            left: Val::Px(10.0),
+            ..default()
+        },
+    ));
+}
+
+fn rotate_camera(time: Res&lt;Time&gt;, mut camera_query: Query&lt;&amp;mut Transform, With&lt;Camera3d&gt;&gt;) {
+    for mut transform in camera_query.iter_mut() {
+        let radius = 9.0;
+        let angle = time.elapsed_secs() * 0.5;
+        transform.translation.x = angle.cos() * radius;
+        transform.translation.z = angle.sin() * radius;
+        transform.look_at(Vec3::ZERO, Vec3::Y);
+    }
+}
+
+fn handle_input(
+    keyboard: Res&lt;ButtonInput&lt;KeyCode&gt;&gt;,
+    time: Res&lt;Time&gt;,
+    mut materials: ResMut&lt;Assets&lt;PatternMaterial&gt;&gt;,
+) {
+    let delta = time.delta_secs();
+
+    for (_, material) in materials.iter_mut() {
+        if keyboard.just_pressed(KeyCode::Digit1) {
+            material.pattern_type = 0; // Checkerboard
+        }
+        if keyboard.just_pressed(KeyCode::Digit2) {
+            material.pattern_type = 1; // Circles
+        }
+        if keyboard.just_pressed(KeyCode::Digit3) {
+            material.pattern_type = 2; // Grid
+        }
+        if keyboard.just_pressed(KeyCode::Digit4) {
+            material.pattern_type = 3; // Stripes
+        }
+        if keyboard.just_pressed(KeyCode::Digit5) {
+            material.pattern_type = 4; // Dots
+        }
+        if keyboard.just_pressed(KeyCode::Digit6) {
+            material.pattern_type = 5; // Waves
+        }
+        if keyboard.just_pressed(KeyCode::Digit7) {
+            material.pattern_type = 6; // Cutout Circles
+        }
+
+        if keyboard.pressed(KeyCode::ArrowUp) {
+            material.scale = (material.scale + delta * 5.0).min(10.0);
+        }
+        if keyboard.pressed(KeyCode::ArrowDown) {
+            material.scale = (material.scale - delta * 5.0).max(0.5);
+        }
+    }
+}
+
+fn update_ui(materials: Res&lt;Assets&lt;PatternMaterial&gt;&gt;, mut text_query: Query&lt;&amp;mut Text&gt;) {
+    if !materials.is_changed() {
+        return;
+    }
+
+    if let Some((_, material)) = materials.iter().next() {
+        let pattern_name = match material.pattern_type {
+            0 =&gt; &quot;1 - Checkerboard&quot;,
+            1 =&gt; &quot;2 - Circles&quot;,
+            2 =&gt; &quot;3 - Grid&quot;,
+            3 =&gt; &quot;4 - Stripes&quot;,
+            4 =&gt; &quot;5 - Dots&quot;,
+            5 =&gt; &quot;6 - Waves&quot;,
+            6 =&gt; &quot;7 - Cutout Circles (discard demo)&quot;,
+            _ =&gt; &quot;Unknown&quot;,
+        };
+
+        for mut text in text_query.iter_mut() {
+            **text = format!(
+                &quot;[1-6]: Change Pattern | UP/DOWN: Adjust Scale\n\
+                Pattern: {}\n\
+                Scale: {:.1}&quot;,
+                pattern_name, material.scale
+            );
+        }
+    }
+}
+</code></pre>
+<p>Don’t forget to add it to <code>src/demos/mod.rs</code>:</p><pre><code class="language-rust">// ... other demoss
+pub mod pattern_gen;
+</code></pre>
+<p>And register it in <code>src/main.rs</code>:</p><pre><code class="language-rust">Demo {
+    number: &quot;1.3&quot;,
+    title: &quot;WGSL Fundamentals - Functions &amp; Control Flow&quot;,
+    run: demos::pattern_gen::run,
+},
+</code></pre>
+<h3 id="running-the-demo">Running the Demo</h3>
+<p>When you run the project, you will see a sphere covered in a black and white pattern. Use the controls to explore the different procedurally generated patterns. Each pattern is contained in its own function and is chosen using <code>if</code>/<code>else</code> logic, demonstrating the core concepts of this article.</p><h4 id="controls">Controls</h4>
+<table>
+<thead>
+<tr>
+<th>Control</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>1-7 Keys</strong></td>
+<td>Instantly switch to a specific pattern.</td>
+</tr>
+<tr>
+<td><strong>UP/DOWN</strong> Arrows</td>
+<td>Adjust the scale uniform, changing the pattern frequency.</td>
+</tr>
+</tbody></table>
+<h4 id="what-youre-seeing">What You’re Seeing</h4>
+<figure class="post__image"><img src="/media/files/1.3%20-%20screenshot%201.png" alt="screenshot 1" data-is-external-image="true"></figure>
+<figure class="post__image"><img src="/media/files/1.3%20-%20screenshot%202.png" alt="screenshot 2" data-is-external-image="true"></figure>
+<figure class="post__image"><img src="/media/files/1.3%20-%20screenshot%203.png" alt="screenshot 3" data-is-external-image="true"></figure>
+<figure class="post__image"><img src="/media/files/1.3%20-%20screenshot%204.png" alt="screenshot 4" data-is-external-image="true"></figure>
+<figure class="post__image"><img src="/media/files/1.3%20-%20screenshot%205.png" alt="screenshot 5" data-is-external-image="true"></figure>
+<figure class="post__image"><img src="/media/files/1.3%20-%20screenshot%206.png" alt="screenshot 6" data-is-external-image="true"></figure>
+<figure class="post__image"><img src="/media/files/1.3%20-%20screenshot%207.png" alt="screenshot 7" data-is-external-image="true"></figure><p>Each pattern corresponds to a different branch in our fragment shader’s logic.</p><table>
+<thead>
+<tr>
+<th>Pattern</th>
+<th>Concept Demonstrated</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Checkerboard</strong></td>
+<td>Uses integer math (<code>floor</code>, bitwise <code>&amp;</code>) inside a dedicated function to create a classic alternating pattern.</td>
+</tr>
+<tr>
+<td><strong>Circles</strong></td>
+<td>Demonstrates using a distance function (<code>length</code>) combined with modulo (<code>%</code>) to create repeating, concentric rings.</td>
+</tr>
+<tr>
+<td><strong>Grid</strong></td>
+<td>Shows how <code>step()</code> and <code>fract()</code> can be used to draw thin lines, with <code>max()</code> acting as a logical “OR”.</td>
+</tr>
+<tr>
+<td><strong>Stripes</strong></td>
+<td>A simple function that uses diagonal coordinates (<code>uv.x</code> + <code>uv.y</code>) to create repeating lines.</td>
+</tr>
+<tr>
+<td><strong>Dots</strong></td>
+<td>A great example of function composition: it uses <code>fract()</code> to create a grid of “cells” and then <code>length()</code> inside each one.</td>
+</tr>
+<tr>
+<td><strong>Waves</strong></td>
+<td>The key demonstration of <strong>loops</strong>. A for loop runs 5 times to layer multiple <code>sin()</code> waves together for a complex effect.</td>
+</tr>
+<tr>
+<td><strong>Cutout Circles</strong></td>
+<td>The key demonstration of <strong>discard</strong>. An <code>if</code> statement calls discard for any fragment inside a dot, creating <strong>actual see-through holes</strong> in the geometry.</td>
+</tr>
+</tbody></table>
+<h3 id="a-bonus-insight-world-space-vs-uv-space">A Bonus Insight: World-Space vs. UV-Space</h3>
+<p>You might notice that the patterns (especially the circles and dots) appear stretched and distorted on the sides of the sphere. This is not a bug! It’s a key learning moment. Our shader is generating the patterns based on the object’s <code>world_position.xy</code> coordinates, effectively projecting them onto the model like a slide projector. This is different from “UV mapping,” where a texture is carefully wrapped around the surface. We will explore UV mapping in great detail in a later phase.</p><h2 id="key-takeaways">Key Takeaways</h2>
+<p>You now have the essential tools to build logic and structure into your shaders. Before we move on, let’s distill the most important lessons from this article into four core principles.</p><ol>
+<li><strong>Build a Toolbox with Functions.</strong><br> Don’t write monolithic shaders. The key to clean, manageable, and reusable code is to break every distinct task into its own function. Think of functions like <code>get_luminance()</code> or <code>checkerboard()</code> not just as code, but as custom tools you are building. This practice will make your shaders dramatically easier to read, debug, and expand upon.</li>
+<li><strong>Use <code>if</code> for Logic, <code>select()</code> for Selection.</strong><br> You have two ways to make decisions. Use <code>if</code>/<code>else</code> statements for complex logic where different branches execute entirely different blocks of code or expensive functions. For simple conditional assignments, prefer the branchless <code>select()</code> function - it’s more concise and often more performant on the GPU.</li>
+<li><strong>The #1 Rule of Loops: Keep Them Simple.</strong><br> While loops are powerful, they can be a major performance trap on the GPU. The most critical lesson is to avoid loops with a dynamic or unpredictable number of iterations. Always prefer for loops with a small, constant iteration count (e.g., <code>for (var i=0; i&lt;8; i=i+1)</code>). This allows the compiler to heavily optimize the code, often by “unrolling” it for maximum speed.</li>
+<li><strong>Exit Early with <code>return</code> and <code>discard</code>.</strong><br> Don’t be afraid to exit your logic early. Use <code>return</code> at the top of your functions as “guard clauses” to handle simple cases and flatten your code, making the main logic path clearer. In fragment shaders, remember you have a unique tool: <code>discard</code>. Use it to completely throw away a pixel, which is the perfect and most efficient method for creating hard-edged cutouts like leaves or fences.</li>
+</ol>
+<h2 id="whats-next">What’s Next?</h2>
+<p>You have now mastered the grammar of WGSL. You know how to define data, organize your logic into functions, and control the flow of execution with conditionals and loops. With this knowledge, you can build the skeleton of almost any shader effect.</p><p>But what about the actual calculations that create the visual magic? How do you calculate the angle between two vectors for lighting? How do you create a smooth gradient, a perfect circle, or a rippling sine wave?</p><p>While you could build these from raw arithmetic, the GPU provides a massive, hardware-accelerated toolkit for exactly these tasks. In the next article, we will dive into <strong>WGSL’s rich library of built-in mathematical functions</strong>. These are the power tools of shader programming - highly optimized functions like <code>dot()</code>, <code>sin()</code>, <code>mix()</code>, <code>length()</code>, and <code>smoothstep()</code> that make complex visual effects possible with a single line of code.</p><p><em>Next up:</em> <a href="https://hexbee.hashnode.dev/14-wgsl-built-in-mathematical-functions"><strong><em>1.4 - WGSL Built-in Mathematical Functions</em></strong></a></p><hr>
+<h2 id="quick-reference">Quick Reference</h2>
+<p>A cheat sheet for WGSL’s core logic and control flow syntax.</p><h3 id="functions">Functions</h3>
+<pre><code class="language-wgsl">// Syntax: fn name(param: type) -&gt; return_type { ... }
+fn add(a: f32, b: f32) -&gt; f32 {
+    return a + b;
+}
+</code></pre>
+<p><strong>Rule:</strong> No function overloading. Function names must be unique.</p><h3 id="control-flow-structures">Control Flow Structures</h3>
+<table>
+<thead>
+<tr>
+<th>Construct</th>
+<th>Syntax</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>If/Else</strong></td>
+<td><code>if condition { ... } else if ... { ... } else { ... }</code></td>
+</tr>
+<tr>
+<td><strong>For Loop</strong></td>
+<td><code>for (var i: i32 = 0; i &lt; 8; i = i + 1) { ... }</code></td>
+</tr>
+<tr>
+<td><strong>While Loop</strong></td>
+<td><code>while condition { ... }</code></td>
+</tr>
+<tr>
+<td><strong>Loop</strong></td>
+<td><code>loop { if exit_condition { break; } }</code></td>
+</tr>
+</tbody></table>
+<h3 id="conditional-assignment-branchless">Conditional Assignment (Branchless)</h3>
+<pre><code class="language-wgsl">// The &quot;ternary&quot; equivalent: select(if_false, if_true, condition)
+let color = select(BLACK, WHITE, brightness &gt; 0.5);
+</code></pre>
+<p><strong>Rule:</strong> WGSL does <strong>not</strong> have the <code>? :</code> operator.</p><h3 id="execution-control-keywords">Execution Control Keywords</h3>
+<table>
+<thead>
+<tr>
+<th>Keyword</th>
+<th>Scope</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>return</code></td>
+<td>Function</td>
+<td>Exits the current function, optionally returning a value.</td>
+</tr>
+<tr>
+<td><code>break</code></td>
+<td>Loop</td>
+<td>Immediately exits the innermost loop.</td>
+</tr>
+<tr>
+<td><code>continue</code></td>
+<td>Loop</td>
+<td>Skips the rest of the current iteration and starts the next.</td>
+</tr>
+<tr>
+<td><code>discard</code></td>
+<td>Fragment Shader</td>
+<td>Aborts all rendering for the current pixel.</td>
+</tr>
+</tbody></table>
+
+            ]]>
+        </content>
+    </entry>
     <entry>
         <title>1.2 - WGSL Fundamentals - Data Types &amp; Variables</title>
         <author>
@@ -567,11 +1284,11 @@ pub mod vector_demo;
 </tr>
 </tbody></table>
 <h4 id="what-youre-seeing">What You’re Seeing</h4>
-<figure class="post__image"><img src="/media/files/1.2%20-%20screenshot%20-%201.png" alt="screenshot 1" data-is-external-image="true"></figure>
-<figure class="post__image"><img src="/media/files/1.2%20-%20screenshot%20-%202.png" alt="screenshot 2" data-is-external-image="true"></figure>
-<figure class="post__image"><img src="/media/files/1.2%20-%20screenshot%20-%203.png" alt="screenshot 3" data-is-external-image="true"></figure>
-<figure class="post__image"><img src="/media/files/1.2%20-%20screenshot%20-%204.png" alt="screenshot 4" data-is-external-image="true"></figure>
-<figure class="post__image"><img src="/media/files/1.2%20-%20screenshot%20-%205.png" alt="screenshot 5" data-is-external-image="true"></figure><p>Each mode corresponds to a different branch in our fragment shader’s logic.</p><table>
+<figure class="post__image"><img src="/media/files/1.2%20-%20screenshot%201.png" alt="screenshot 1" data-is-external-image="true"></figure>
+<figure class="post__image"><img src="/media/files/1.2%20-%20screenshot%202.png" alt="screenshot 2" data-is-external-image="true"></figure>
+<figure class="post__image"><img src="/media/files/1.2%20-%20screenshot%203.png" alt="screenshot 3" data-is-external-image="true"></figure>
+<figure class="post__image"><img src="/media/files/1.2%20-%20screenshot%204.png" alt="screenshot 4" data-is-external-image="true"></figure>
+<figure class="post__image"><img src="/media/files/1.2%20-%20screenshot%205.png" alt="screenshot 5" data-is-external-image="true"></figure><p>Each mode corresponds to a different branch in our fragment shader’s logic.</p><table>
 <thead>
 <tr>
 <th>Mode</th>
@@ -1255,9 +1972,9 @@ pub mod debug_pipeline;
 </tr>
 </tbody></table>
 <h4 id="what-youre-seeing">What You’re Seeing</h4>
-<figure class="post__image"><img src="/media/files/1.1%20-%20screenshot%20-%201.png" alt="screenshot 1" data-is-external-image="true"></figure>
-<figure class="post__image"><img src="/media/files/1.1%20-%20screenshot%20-%202.png" alt="screenshot 2" data-is-external-image="true"></figure>
-<figure class="post__image"><img src="/media/files/1.1%20-%20screenshot%20-%203.png" alt="screenshot 3" data-is-external-image="true"></figure><table>
+<figure class="post__image"><img src="/media/files/1.1%20-%20screenshot%201.png" alt="screenshot 1" data-is-external-image="true"></figure>
+<figure class="post__image"><img src="/media/files/1.1%20-%20screenshot%202.png" alt="screenshot 2" data-is-external-image="true"></figure>
+<figure class="post__image"><img src="/media/files/1.1%20-%20screenshot%203.png" alt="screenshot 3" data-is-external-image="true"></figure><table>
 <thead>
 <tr>
 <th>Mode</th>
