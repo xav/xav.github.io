@@ -3,7 +3,7 @@
     <title>Hexbee&#x27;s Dev Journal</title>
     <link href="https://xav.github.io/feed.xml" rel="self" />
     <link href="https://xav.github.io" />
-    <updated>2025-12-13T19:50:08+01:00</updated>
+    <updated>2025-12-13T19:52:15+01:00</updated>
     <author>
         <name>Xavier Basty Kjellberg</name>
     </author>
@@ -22,7 +22,7 @@
             <category term="rust"/>
             <category term="bevy"/>
 
-        <updated>2025-12-13T19:31:39+01:00</updated>
+        <updated>2025-09-06T19:31:00+02:00</updated>
             <summary type="html">
                 <![CDATA[
                         <img src="https://xav.github.io/media/posts/5/cover2.png" alt="" />
