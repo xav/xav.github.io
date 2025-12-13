@@ -3,7 +3,7 @@
     <title>Hexbee&#x27;s Dev Journal</title>
     <link href="https://xav.github.io/feed.xml" rel="self" />
     <link href="https://xav.github.io" />
-    <updated>2025-12-13T19:43:48+01:00</updated>
+    <updated>2025-12-13T19:50:08+01:00</updated>
     <author>
         <name>Xavier Basty Kjellberg</name>
     </author>
@@ -567,11 +567,11 @@ pub mod vector_demo;
 </tr>
 </tbody></table>
 <h4 id="what-youre-seeing">What You’re Seeing</h4>
-<figure class="post__image"><img src="/media/files/1.2%20-%20screenshot%201.png" alt="screenshot 1" data-is-external-image="true"></figure>
-<figure class="post__image"><img src="/media/files/1.2%20-%20screenshot%202.png" alt="screenshot 1" data-is-external-image="true"></figure>
-<figure class="post__image"><img src="/media/files/1.2%20-%20screenshot%203.png" alt="screenshot 1" data-is-external-image="true"></figure>
-<figure class="post__image"><img src="/media/files/1.2%20-%20screenshot%204.png" alt="screenshot 1" data-is-external-image="true"></figure>
-<figure class="post__image"><img src="/media/files/1.2%20-%20screenshot%205.png" alt="screenshot 1" data-is-external-image="true"></figure><p>Each mode corresponds to a different branch in our fragment shader’s logic.</p><table>
+<figure class="post__image"><img src="/media/files/1.2%20-%20screenshot%20-%201.png" alt="screenshot 1" data-is-external-image="true"></figure>
+<figure class="post__image"><img src="/media/files/1.2%20-%20screenshot%20-%202.png" alt="screenshot 2" data-is-external-image="true"></figure>
+<figure class="post__image"><img src="/media/files/1.2%20-%20screenshot%20-%203.png" alt="screenshot 3" data-is-external-image="true"></figure>
+<figure class="post__image"><img src="/media/files/1.2%20-%20screenshot%20-%204.png" alt="screenshot 4" data-is-external-image="true"></figure>
+<figure class="post__image"><img src="/media/files/1.2%20-%20screenshot%20-%205.png" alt="screenshot 5" data-is-external-image="true"></figure><p>Each mode corresponds to a different branch in our fragment shader’s logic.</p><table>
 <thead>
 <tr>
 <th>Mode</th>
@@ -1255,9 +1255,9 @@ pub mod debug_pipeline;
 </tr>
 </tbody></table>
 <h4 id="what-youre-seeing">What You’re Seeing</h4>
-<figure class="post__image"><img src="/media/files/1.1%20-%20screenshot%201.png" alt="screenshot 1" data-is-external-image="true"></figure>
-<figure class="post__image"><img src="/media/files/1.1%20-%20screenshot%202.png" alt="screenshot 2" data-is-external-image="true"></figure>
-<figure class="post__image"><img src="/media/files/1.1%20-%20screenshot%203.png" alt="screenshot 3" data-is-external-image="true"></figure><table>
+<figure class="post__image"><img src="/media/files/1.1%20-%20screenshot%20-%201.png" alt="screenshot 1" data-is-external-image="true"></figure>
+<figure class="post__image"><img src="/media/files/1.1%20-%20screenshot%20-%202.png" alt="screenshot 2" data-is-external-image="true"></figure>
+<figure class="post__image"><img src="/media/files/1.1%20-%20screenshot%20-%203.png" alt="screenshot 3" data-is-external-image="true"></figure><table>
 <thead>
 <tr>
 <th>Mode</th>
