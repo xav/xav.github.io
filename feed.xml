@@ -3,7 +3,7 @@
     <title>Hexbee&#x27;s Dev Journal</title>
     <link href="https://xav.github.io/feed.xml" rel="self" />
     <link href="https://xav.github.io" />
-    <updated>2025-12-13T19:36:05+01:00</updated>
+    <updated>2025-12-13T19:36:53+01:00</updated>
     <author>
         <name>Xavier Basty Kjellberg</name>
     </author>
@@ -16,6 +16,7 @@
         </author>
         <link href="https://xav.github.io/12-wgsl-fundamentals-data-types-and-variables-2/"/>
         <id>https://xav.github.io/12-wgsl-fundamentals-data-types-and-variables-2/</id>
+        <media:content url="https://xav.github.io/media/posts/5/cover2.png" medium="image" />
             <category term="wgsl"/>
             <category term="shaders"/>
             <category term="rust"/>
@@ -24,11 +25,13 @@
         <updated>2025-12-13T19:31:39+01:00</updated>
             <summary type="html">
                 <![CDATA[
+                        <img src="https://xav.github.io/media/posts/5/cover2.png" alt="" />
                     What We’re Learning In our last article, we built a mental model of the graphics pipeline: a VFX studio where “Layout Artists” (Vertex Shaders) position&hellip;
                 ]]>
             </summary>
         <content type="html">
             <![CDATA[
+                    <p><img src="https://xav.github.io/media/posts/5/cover2.png" class="type:primaryImage" alt="" /></p>
                 <h2 id="what-were-learning">What We’re Learning</h2>
 <p>In our last article, we built a mental model of the graphics pipeline: a VFX studio where “Layout Artists” (Vertex Shaders) position geometry and “Coloring Artists” (Fragment Shaders) paint the final pixels. But what materials do these artists work with? How do we hand them a 3D coordinate to transform, a surface direction for lighting, or a final color to paint? How do we describe the data that flows through their assembly line?</p><p>This is where WGSL’s data types come in. These aren’t generic programming types; they are the fundamental vocabulary of the GPU - the digital clay, paint, and transformation tools our artists use to build a visual world. Learning them is like learning the alphabet before you can write a story.</p><p>At the lowest level, we have <strong>scalar</strong> types - the individual numbers that form the atoms of our data. But the real power comes from combining these into <strong>vectors</strong>, the workhorse of every shader, representing everything from a <code>vec3&lt;f32&gt;</code> position to a <code>vec4&lt;f32&gt;</code> RGBA color. And to manipulate these vectors - to move, rotate, and project them - we use <strong>matrices</strong>, the mathematical machines of transformation.</p><p>By the end of this article, you’ll understand:</p><ul>
 <li>The atomic building blocks of all shader data: <code>f32</code>, <code>i32</code>, <code>u32</code>, and <code>bool</code>.</li>
