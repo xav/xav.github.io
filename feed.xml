@@ -3,7 +3,7 @@
     <title>Hexbee&#x27;s Dev Journal</title>
     <link href="https://xav.github.io/feed.xml" rel="self" />
     <link href="https://xav.github.io" />
-    <updated>2025-12-13T19:39:48+01:00</updated>
+    <updated>2025-12-13T19:43:48+01:00</updated>
     <author>
         <name>Xavier Basty Kjellberg</name>
     </author>
@@ -567,11 +567,11 @@ pub mod vector_demo;
 </tr>
 </tbody></table>
 <h4 id="what-youre-seeing">What You’re Seeing</h4>
-<p>[screenshot 1](/media/files/2.2 - screenshot 1.png)
-[screenshot 2](/media/files/2.2 - screenshot 2.png)
-[screenshot 3](/media/files/2.2 - screenshot 3.png)
-[screenshot 4](/media/files/2.2 - screenshot 4.png)
-[screenshot 5](/media/files/2.2 - screenshot 5.png)</p><p>Each mode corresponds to a different branch in our fragment shader’s logic.</p><table>
+<figure class="post__image"><img src="/media/files/1.2%20-%20screenshot%201.png" alt="screenshot 1" data-is-external-image="true"></figure>
+<figure class="post__image"><img src="/media/files/1.2%20-%20screenshot%202.png" alt="screenshot 1" data-is-external-image="true"></figure>
+<figure class="post__image"><img src="/media/files/1.2%20-%20screenshot%203.png" alt="screenshot 1" data-is-external-image="true"></figure>
+<figure class="post__image"><img src="/media/files/1.2%20-%20screenshot%204.png" alt="screenshot 1" data-is-external-image="true"></figure>
+<figure class="post__image"><img src="/media/files/1.2%20-%20screenshot%205.png" alt="screenshot 1" data-is-external-image="true"></figure><p>Each mode corresponds to a different branch in our fragment shader’s logic.</p><table>
 <thead>
 <tr>
 <th>Mode</th>
@@ -1255,9 +1255,9 @@ pub mod debug_pipeline;
 </tr>
 </tbody></table>
 <h4 id="what-youre-seeing">What You’re Seeing</h4>
-<p>![[screenshot - 1.png]]
-![[screenshot - 2.png]]
-![[screenshot - 3.png]]</p><table>
+<figure class="post__image"><img src="/media/files/1.1%20-%20screenshot%201.png" alt="screenshot 1" data-is-external-image="true"></figure>
+<figure class="post__image"><img src="/media/files/1.1%20-%20screenshot%202.png" alt="screenshot 2" data-is-external-image="true"></figure>
+<figure class="post__image"><img src="/media/files/1.1%20-%20screenshot%203.png" alt="screenshot 3" data-is-external-image="true"></figure><table>
 <thead>
 <tr>
 <th>Mode</th>
@@ -1290,7 +1290,7 @@ pub mod debug_pipeline;
 <li><strong>Data Flows and is Interpolated from Vertex to Fragment.</strong><br> The two shaders are connected. The vertex shader can pass data (like UV coordinates or normal vectors) to the next stage. The hardware <strong>Rasterizer</strong> automatically <strong>interpolates</strong> (smoothly blends) this data across the face of the triangle, making a unique version of it available to the fragment shader for every single pixel.</li>
 </ol>
 <h2 id="whats-next">What’s Next?</h2>
-<p>You now have the essential mental model for the rendering pipeline - you understand where your shader code runs and the specific job of each stage. With this “map” in hand, we are finally ready to learn the language of the GPU’s artists themselves.</p><p>In the next article, we will dive into the fundamental building blocks of the WGSL language: its data types and variables. You’ll learn how to represent positions, colors, and transformations in your code using scalars, vectors, and matrices.</p><p><em>Next up:</em> <a href="https://xav.github.io/12-wgsl-fundamentals-data-types-and-variables-2/"><strong><em>1.2 - WGSL Fundamentals - Data Types &amp; Variables</em></strong></a></p><hr>
+<p>You now have the essential mental model for the rendering pipeline - you understand where your shader code runs and the specific job of each stage. With this “map” in hand, we are finally ready to learn the language of the GPU’s artists themselves.</p><p>In the next article, we will dive into the fundamental building blocks of the WGSL language: its data types and variables. You’ll learn how to represent positions, colors, and transformations in your code using scalars, vectors, and matrices.</p><p><em>Next up:</em> <a href="https://hexbee.hashnode.dev/12-wgsl-fundamentals-data-types-and-variables"><strong><em>1.2 - WGSL Fundamentals - Data Types &amp; Variables</em></strong></a></p><hr>
 <h2 id="quick-reference">Quick Reference</h2>
 <p>A summary of the core concepts for quick lookup.</p><h3 id="the-pipeline-stages--their-jobs">The Pipeline Stages &amp; Their Jobs</h3>
 <table>
